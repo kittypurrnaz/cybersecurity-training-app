@@ -1,17 +1,18 @@
 <!doctype html>
-<html data-brackets-id='595' lang="en">
-    <head data-brackets-id='596'>
-		<script src="phoenix_live_preview_scripts_instrumented_t3doKTXi.js"></script>
-        <meta data-brackets-id='597' charset="UTF-8" />
-        <meta data-brackets-id='598' name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title data-brackets-id='599'>Cybersecurity Training Package</title>
-        <script data-brackets-id='600' src="https://cdn.tailwindcss.com"></script>
-        <link data-brackets-id='601'
+<html data-brackets-id="595" lang="en">
+    <head data-brackets-id="596">
+        <script src="phoenix_live_preview_scripts_instrumented_t3doKTXi.js"></script>
+        <meta data-brackets-id="597" charset="UTF-8" />
+        <meta data-brackets-id="598" name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title data-brackets-id="599">Cybersecurity Training Package</title>
+        <script data-brackets-id="600" src="https://cdn.tailwindcss.com"></script>
+        <link
+            data-brackets-id="601"
             href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
             rel="stylesheet" />
-        <script data-brackets-id='602' src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
-        <script data-brackets-id='603' src="https://www.gstatic.com/firebasejs/9.17.2/firebase-auth-compat.js"></script>
-        <style data-brackets-id='604'>
+        <script data-brackets-id="602" src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
+        <script data-brackets-id="603" src="https://www.gstatic.com/firebasejs/9.17.2/firebase-auth-compat.js"></script>
+        <style data-brackets-id="604">
             body {
                 font-family: "Inter", sans-serif;
                 background-color: #f9fafb;
@@ -24,143 +25,236 @@
             }
         </style>
     </head>
-    <body data-brackets-id='605' class="min-h-screen bg-gray-100 text-gray-800 p-6">
-        <div data-brackets-id='606' id="auth-section" class="flex justify-center items-center h-screen">
-            <div data-brackets-id='607' class="bg-white p-6 rounded shadow w-full max-w-sm">
-                <h2 data-brackets-id='608' class="text-2xl font-bold mb-4 text-center">Login</h2>
-                <input data-brackets-id='609' id="email" type="email" placeholder="Email" class="w-full mb-2 p-2 border rounded" />
-                <input data-brackets-id='610' id="password" type="password" placeholder="Password" class="w-full mb-4 p-2 border rounded" />
-                <button data-brackets-id='611' id="login-btn" class="bg-blue-600 text-white w-full py-2 rounded">Login</button>
-                <p data-brackets-id='612' id="auth-error" class="text-red-600 text-sm mt-2 text-center"></p>
+    <body class="min-h-screen bg-gray-100 text-gray-800 p-6">
+        <div id="auth-section" class="flex justify-center items-center h-screen">
+            <div class="bg-white p-6 rounded shadow w-full max-w-sm">
+                <h2 class="text-2xl font-bold mb-4 text-center">Login</h2>
+                <input id="email" type="email" placeholder="Email" class="w-full mb-2 p-2 border rounded" />
+                <input id="password" type="password" placeholder="Password" class="w-full mb-4 p-2 border rounded" />
+                <button id="login-btn" class="bg-blue-600 text-white w-full py-2 rounded">Login</button>
+                <p id="auth-error" class="text-red-600 text-sm mt-2 text-center"></p>
+                <p class="text-center mt-2">
+                    Don't have an account?
+                    <button id="show-signup" class="text-blue-600 underline">Sign Up</button>
+                </p>
             </div>
         </div>
 
-        <div data-brackets-id='613' id="main-app" class="hidden">
-            <header data-brackets-id='614' class="flex justify-between items-center mb-10">
-                <div data-brackets-id='615' class="text-center w-full">
-                    <h1 data-brackets-id='616' class="text-4xl font-bold text-blue-600">Cybersecurity Awareness Training</h1>
-                    <p data-brackets-id='617' class="text-lg mt-2">Empowering students with essential knowledge to stay safe online.</p>
+        <div id="signup-form" class="hidden flex justify-center items-center h-screen">
+            <div class="bg-white p-6 rounded shadow w-full max-w-sm">
+                <h2 class="text-2xl font-bold mb-4 text-center">Create Account</h2>
+                <input id="signup-name" type="text" placeholder="Full Name" class="w-full mb-2 p-2 border rounded" />
+                <input
+                    id="signup-email"
+                    type="email"
+                    placeholder="Student Email"
+                    class="w-full mb-2 p-2 border rounded" />
+                <input
+                    id="signup-password"
+                    type="password"
+                    placeholder="Password"
+                    class="w-full mb-4 p-2 border rounded" />
+                <button id="signup-btn" class="bg-green-600 text-white w-full py-2 rounded">Sign Up</button>
+                <p id="signup-error" class="text-red-600 text-sm mt-2 text-center"></p>
+                <p class="text-center mt-2">
+                    Already have an account?
+                    <button id="back-to-login" class="text-blue-600 underline">Back to Login</button>
+                </p>
+            </div>
+        </div>
+
+        <div data-brackets-id="613" id="main-app" class="hidden">
+            <header data-brackets-id="614" class="flex justify-between items-center mb-10">
+                <div data-brackets-id="615" class="text-center w-full">
+                    <h1 data-brackets-id="616" class="text-4xl font-bold text-blue-600">
+                        Cybersecurity Awareness Training
+                    </h1>
+                    <p data-brackets-id="617" class="text-lg mt-2">
+                        Empowering students with essential knowledge to stay safe online.
+                    </p>
                 </div>
-                <div data-brackets-id='618' class="absolute top-4 right-6 bg-white p-3 rounded shadow">
-                    <p data-brackets-id='619' id="user-name" class="font-semibold"></p>
-                    <p data-brackets-id='620' id="user-email" class="text-sm text-gray-600"></p>
+                <div data-brackets-id="618" class="absolute top-4 right-6 bg-white p-3 rounded shadow">
+                    <p data-brackets-id="619" id="user-name" class="font-semibold"></p>
+                    <p data-brackets-id="620" id="user-email" class="text-sm text-gray-600"></p>
                 </div>
             </header>
 
-            <nav data-brackets-id='621' class="flex justify-center gap-4 mb-6">
-                <button data-brackets-id='622' class="tab px-4 py-2 bg-blue-100 text-blue-700 font-semibold rounded" data-target="training">
+            <nav data-brackets-id="621" class="flex justify-center gap-4 mb-6">
+                <button
+                    data-brackets-id="622"
+                    button class="tab px-4 py-2 bg-blue-100 text-blue-700 font-semibold rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200"
+                    data-target="training">
                     Training
                 </button>
-                <button data-brackets-id='623' class="tab px-4 py-2 bg-blue-100 text-blue-700 font-semibold rounded" data-target="quiz">
+                <button
+                    data-brackets-id="623"
+                    class="tab px-4 py-2 bg-blue-100 text-blue-700 font-semibold rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200"
+                    data-target="quiz">
                     Quiz
                 </button>
-                <button data-brackets-id='624' class="tab px-4 py-2 bg-blue-100 text-blue-700 font-semibold rounded" data-target="feedback">
+                <button
+                    data-brackets-id="624"
+                    class="tab px-4 py-2 bg-blue-100 text-blue-700 font-semibold rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200"
+                    data-target="feedback">
                     Survey
                 </button>
-                <button data-brackets-id='625' class="tab px-4 py-2 bg-blue-100 text-blue-700 font-semibold rounded" data-target="report">
+                <button
+                    data-brackets-id="625"
+                    class="tab px-4 py-2 bg-blue-100 text-blue-700 font-semibold rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200"
+                    data-target="report">
                     Report
                 </button>
             </nav>
 
-            <main data-brackets-id='626' class="max-w-3xl mx-auto">
-                
+            <main data-brackets-id="626" class="max-w-3xl mx-auto">
                 <!-- Training Module -->
-                <section data-brackets-id='627' id="training" class="active bg-white p-6 rounded shadow">
-                    <h2 data-brackets-id='628' class="text-2xl font-bold mb-4">Training Content</h2>
+                <section id="training" class="active bg-white p-6 rounded shadow">
+                    <h2 class="text-2xl font-bold mb-4">Training Content</h2>
 
-                    <div data-brackets-id='629' class="flex gap-4 mb-4">
-                        <button data-brackets-id='630' class="training-option bg-blue-200 px-4 py-2 rounded" data-video="password">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                        <button class="training-option bg-blue-200 px-4 py-2 rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200" data-video="intro">
+                            Cybersecurity Essentials
+                        </button>
+                        <button class="training-option bg-blue-200 px-4 py-2 rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200" data-video="password">
                             Strong Passwords
                         </button>
-                        <button data-brackets-id='631' class="training-option bg-blue-200 px-4 py-2 rounded" data-video="mfa">
-                            Multi-Factor Authentication
+                        <button class="training-option bg-blue-200 px-4 py-2 rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200" data-video="mfa">
+                            MFA</button>
+                        <button class="training-option bg-blue-200 px-4 py-2 rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200" data-video="summary">
+                            Summary
                         </button>
                     </div>
 
-                    <div data-brackets-id='632' id="password-video" class="training-video hidden">
-                        <h3 data-brackets-id='633' class="text-xl font-semibold mb-2">Strong Passwords</h3>
-                        <p data-brackets-id='634' class="mb-4">
+                    <!-- Introduction -->
+                    <div id="intro-video" class="training-video hidden">
+                        <h3 class="text-xl font-semibold mb-2">Module 0: Cybersecurity Essentials</h3>
+                        <p class="mb-4">An overview of key cybersecurity principles and why this training matters.</p>
+                        <video id="video-intro" controls class="w-full rounded shadow">
+                            <source src="intro.mp4" type="video/mp4" />
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+
+                    <!-- Strong Passwords -->
+                    <div id="password-video" class="training-video hidden">
+                        <h3 class="text-xl font-semibold mb-2">Module 1: Strong Passwords</h3>
+                        <p class="mb-4">
                             Use long, complex, and unique passwords. Avoid reusing the same password. Consider using a
                             password manager.
                         </p>
-                        <video data-brackets-id='635' id="video-password" controls class="w-full rounded shadow">
-                            <source data-brackets-id='636' src="password.mp4" type="video/mp4" />
+                        <video id="video-password" controls class="w-full rounded shadow">
+                            <source src="password.mp4" type="video/mp4" />
                             Your browser does not support the video tag.
                         </video>
                     </div>
 
-                    <div data-brackets-id='637' id="mfa-video" class="training-video hidden">
-                        <h3 data-brackets-id='638' class="text-xl font-semibold mb-2">Multi-Factor Authentication</h3>
-                        <p data-brackets-id='639' class="mb-4">
+                    <!-- Multi-Factor Authentication -->
+                    <div id="mfa-video" class="training-video hidden">
+                        <h3 class="text-xl font-semibold mb-2">Module 2: Multi-Factor Authentication</h3>
+                        <p class="mb-4">
                             MFA adds an extra layer of security. Even if your password is stolen, the second factor
                             keeps you protected.
                         </p>
-                        <video data-brackets-id='640' id="video-mfa" controls class="w-full rounded shadow">
-                            <source data-brackets-id='641' src="your-mfa-video.mp4" type="video/mp4" />
+                        <video id="video-mfa" controls class="w-full rounded shadow">
+                            <source src="your-mfa-video.mp4" type="video/mp4" />
                             Your browser does not support the video tag.
                         </video>
                     </div>
+
+                    <!-- Summary -->
+                    <div id="summary-video" class="training-video hidden">
+                        <h3 class="text-xl font-semibold mb-2">Module 3: Summary</h3>
+                        <p class="mb-4">A recap of all the key takeaways from this training package.</p>
+                        <video id="video-summary" controls class="w-full rounded shadow">
+                            <source src="summary.mp4" type="video/mp4" />
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+
+                    <!-- Navigation Buttons Container -->
+                    <div id="training-nav-buttons" class="mt-4 flex justify-center gap-4"></div>
                 </section>
 
                 <!-- Quiz Module -->
-                <section data-brackets-id='642' id="quiz" class="hidden bg-white p-6 rounded shadow">
-                    <h2 data-brackets-id='643' class="text-2xl font-bold mb-4">Quiz</h2>
+                <section data-brackets-id="642" id="quiz" class="hidden bg-white p-6 rounded shadow">
+                    <h2 data-brackets-id="643" class="text-2xl font-bold mb-4">Quiz</h2>
 
                     <!-- Topic Selector -->
-                    <div data-brackets-id='644' id="quiz-selection">
-                        <label data-brackets-id='645' class="block font-semibold mb-2">Select a Quiz Topic:</label>
-                        <select data-brackets-id='646' id="quiz-topic" class="w-full p-2 border rounded mb-4">
-                            <option data-brackets-id='647' value="">-- Choose Topic --</option>
-                            <option data-brackets-id='648' value="password">Strong Passwords</option>
-                            <option data-brackets-id='649' value="mfa">Multi-Factor Authentication</option>
+                    <div data-brackets-id="644" id="quiz-selection">
+                        <label data-brackets-id="645" class="block font-semibold mb-2">Select a Quiz Topic:</label>
+                        <select data-brackets-id="646" id="quiz-topic" class="w-full p-2 border rounded mb-4">
+                            <option data-brackets-id="647" value="">-- Choose Topic --</option>
+                            <option data-brackets-id="648" value="password">Strong Passwords</option>
+                            <option data-brackets-id="649" value="mfa">Multi-Factor Authentication</option>
                         </select>
-                        <button data-brackets-id='650' id="start-quiz-btn" class="bg-blue-600 text-white px-4 py-2 rounded">Next</button>
+                        <button
+                            data-brackets-id="650"
+                            id="start-quiz-btn"
+                            class="bg-blue-600 text-white px-4 py-2 rounded">
+                            Next
+                        </button>
                     </div>
 
                     <!-- Actual Quiz Form (Initially Hidden) -->
-                    <form data-brackets-id='651' id="quiz-form" class="hidden mt-6">
-                        <div data-brackets-id='652' id="quiz-questions"></div>
-                        <button data-brackets-id='653' type="submit" class="bg-blue-600 text-white px-4 py-2 rounded mt-4">Submit Quiz</button>
+                    <form data-brackets-id="651" id="quiz-form" class="hidden mt-6">
+                        <div data-brackets-id="652" id="quiz-questions"></div>
+                        <button
+                            data-brackets-id="653"
+                            type="submit"
+                            class="bg-blue-600 text-white px-4 py-2 rounded mt-4">
+                            Submit Quiz
+                        </button>
                     </form>
 
-                    <div data-brackets-id='654' id="quiz-result" class="mt-4 font-semibold"></div>
+                    <div data-brackets-id="654" id="quiz-result" class="mt-4 font-semibold"></div>
                 </section>
 
                 <!-- Feedback Module -->
-                <section data-brackets-id='655' id="feedback" class="hidden bg-white p-6 rounded shadow">
-                    <h2 data-brackets-id='656' class="text-2xl font-bold mb-4">Survey</h2>
-                    <form data-brackets-id='657' id="feedback-form">
-                        <label data-brackets-id='658' class="block mb-2">Select your module:</label>
-                        <select data-brackets-id='659' name="rating" class="mb-4 p-2 border w-full rounded">
-                            <option data-brackets-id='660' value="">-- Module --</option>
-                            <option data-brackets-id='661' value="5">Strong Passwords</option>
-                            <option data-brackets-id='662' value="4">Multi-Factor Authentication</option>
+                <section data-brackets-id="655" id="feedback" class="hidden bg-white p-6 rounded shadow">
+                    <h2 data-brackets-id="656" class="text-2xl font-bold mb-4">Survey</h2>
+                    <form data-brackets-id="657" id="feedback-form">
+                        <label data-brackets-id="658" class="block mb-2">Select your module:</label>
+                        <select data-brackets-id="659" name="rating" class="mb-4 p-2 border w-full rounded">
+                            <option data-brackets-id="660" value="">-- Module --</option>
+                            <option data-brackets-id="662" value="4">Module 0: Cybersecurity Essentials</option>
+                            <option data-brackets-id="661" value="5">Module 1: Strong Passwords</option>
+                            <option data-brackets-id="662" value="4">Module 2: Multi-Factor Authentication</option>
+                            <option data-brackets-id="662" value="4">Module 3: Summary</option>
                         </select>
-                        <label data-brackets-id='663' class="block mb-2">How would you rate this module?</label>
-                        <select data-brackets-id='664' name="rating" class="mb-4 p-2 border w-full rounded">
-                            <option data-brackets-id='665' value="">-- Rate --</option>
-                            <option data-brackets-id='666' value="5">Excellent</option>
-                            <option data-brackets-id='667' value="4">Good</option>
-                            <option data-brackets-id='668' value="3">Average</option>
-                            <option data-brackets-id='669' value="2">Poor</option>
-                            <option data-brackets-id='670' value="1">Very Poor</option>
+                        <label data-brackets-id="663" class="block mb-2">How would you rate this module?</label>
+                        <select data-brackets-id="664" name="rating" class="mb-4 p-2 border w-full rounded">
+                            <option data-brackets-id="665" value="">-- Rate --</option>
+                            <option data-brackets-id="666" value="5">Excellent</option>
+                            <option data-brackets-id="667" value="4">Good</option>
+                            <option data-brackets-id="668" value="3">Average</option>
+                            <option data-brackets-id="669" value="2">Poor</option>
+                            <option data-brackets-id="670" value="1">Very Poor</option>
                         </select>
-                        <label data-brackets-id='671' class="block mb-2">Any comments?</label>
-                        <textarea data-brackets-id='672' name="comments" class="w-full p-2 border rounded mb-4"></textarea>
-                        <button data-brackets-id='673' type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Submit Feedback</button>
+                        <label data-brackets-id="671" class="block mb-2">Any comments?</label>
+                        <textarea
+                            data-brackets-id="672"
+                            name="comments"
+                            class="w-full p-2 border rounded mb-4"></textarea>
+                        <button data-brackets-id="673" type="submit" class="bg-green-500 text-white px-4 py-2 rounded">
+                            Submit Feedback
+                        </button>
                     </form>
-                    <div data-brackets-id='674' id="feedback-msg" class="mt-4 font-semibold text-green-600"></div>
+                    <div data-brackets-id="674" id="feedback-msg" class="mt-4 font-semibold text-green-600"></div>
                 </section>
 
                 <!-- Report Module -->
-                <section data-brackets-id='675' id="report" class="hidden bg-white p-6 rounded shadow">
-                    <h2 data-brackets-id='676' class="text-2xl font-bold mb-4">Report</h2>
-                    <div data-brackets-id='677' id="report-content" class="text-gray-800"></div>
+                <section data-brackets-id="675" id="report" class="hidden bg-white p-6 rounded shadow">
+                    <h2 data-brackets-id="676" class="text-2xl font-bold mb-4">Report</h2>
+                    <div id="report-content" class="text-gray-800">
+    <p><strong>Name:</strong> <span id="report-name"></span></p>
+    <p><strong>ID:</strong> <span id="report-id"></span></p>
+    <hr class="my-4" />
+</div>
                 </section>
             </main>
         </div>
 
-        <script data-brackets-id='678'>
+        <script data-brackets-id="678">
             const firebaseConfig = {
                 apiKey: "AIzaSyAdFptKhxHQj9FDbya9lMUw3e1okcp8Kmk",
                 authDomain: "cybersecurity-training-a-35bbf.firebaseapp.com",
@@ -174,9 +268,11 @@
 
             const auth = firebase.auth();
 
+            // Login
             document.getElementById("login-btn").addEventListener("click", () => {
-                const email = document.getElementById("email").value;
+                const email = document.getElementById("email").value.trim();
                 const password = document.getElementById("password").value;
+
                 auth.signInWithEmailAndPassword(email, password)
                     .then((userCredential) => {
                         const user = userCredential.user;
@@ -187,6 +283,50 @@
                     })
                     .catch((error) => {
                         document.getElementById("auth-error").innerText = error.message;
+                    });
+            });
+
+            // Switch to Sign Up
+            document.getElementById("show-signup").addEventListener("click", () => {
+                document.getElementById("auth-section").classList.add("hidden");
+                document.getElementById("signup-form").classList.remove("hidden");
+            });
+
+            // Back to Login
+            document.getElementById("back-to-login").addEventListener("click", () => {
+                document.getElementById("signup-form").classList.add("hidden");
+                document.getElementById("auth-section").classList.remove("hidden");
+            });
+
+            // Sign Up
+            document.getElementById("signup-btn").addEventListener("click", () => {
+                const email = document.getElementById("signup-email").value.trim();
+                const password = document.getElementById("signup-password").value;
+                const name = document.getElementById("signup-name").value.trim();
+
+                if (!email.endsWith("@student.murdoch.edu.au")) {
+                    document.getElementById("signup-error").innerText = "Only Murdoch student emails are allowed.";
+                    return;
+                }
+
+                if (!name) {
+                    document.getElementById("signup-error").innerText = "Please enter your full name.";
+                    return;
+                }
+
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        return userCredential.user.updateProfile({ displayName: name });
+                    })
+                    .then(() => {
+                        const user = auth.currentUser;
+                        document.getElementById("user-name").innerText = user.displayName || "User";
+                        document.getElementById("user-email").innerText = user.email;
+                        document.getElementById("signup-form").classList.add("hidden");
+                        document.getElementById("main-app").classList.remove("hidden");
+                    })
+                    .catch((error) => {
+                        document.getElementById("signup-error").innerText = error.message;
                     });
             });
 
@@ -209,42 +349,206 @@
                     stopAllVideos();
                     document.querySelectorAll("section").forEach((sec) => sec.classList.add("hidden"));
                     document.getElementById(target).classList.remove("hidden");
+                    
+                    if (target === "quiz") {
+    quizTopicSelect.parentElement.style.display = "block"; // Ensure dropdown is shown
+    quizForm.classList.add("hidden");
+    quizQuestionsDiv.innerHTML = "";
+    quizResult.innerText = "";
+    startQuizBtn.style.display = "inline-block";
+    quizTopicSelect.value = "";
+}
 
                     if (target === "report") {
-                        const report = document.getElementById("report-content");
-                        let html = "";
+    const report = document.getElementById("report-content");
 
-                        if (passwordScore !== null) {
-                            html += `<p><strong>Password Quiz Completed:</strong> Yes</p><p><strong>Score:</strong> ${passwordScore}%</p><hr class="my-2" />`;
-                        } else {
-                            html += `<p><strong>Password Quiz Completed:</strong> No</p><hr class="my-2" />`;
-                        }
+    // Set name and ID
+    document.getElementById("report-name").innerText = auth.currentUser.displayName || "N/A";
+    document.getElementById("report-id").innerText = auth.currentUser.email || "N/A";
 
-                        if (mfaScore !== null) {
-                            html += `<p><strong>MFA Quiz Completed:</strong> Yes</p><p><strong>Score:</strong> ${mfaScore}%</p>`;
-                        } else {
-                            html += `<p><strong>MFA Quiz Completed:</strong> No</p>`;
-                        }
+    let html = "";
 
-                        report.innerHTML = html;
+    if (passwordScore !== null) {
+        html += `<p><strong>Password Quiz Completed:</strong> Yes</p><p><strong>Score:</strong> ${passwordScore}%</p><hr class="my-2" />`;
+    } else {
+        html += `<p><strong>Password Quiz Completed:</strong> No</p><hr class="my-2" />`;
+    }
+
+    if (mfaScore !== null) {
+        html += `<p><strong>MFA Quiz Completed:</strong> Yes</p><p><strong>Score:</strong> ${mfaScore}%</p>`;
+    } else {
+        html += `<p><strong>MFA Quiz Completed:</strong> No</p>`;
+    }
+
+    // Append the quiz report after Name and ID section
+    document.getElementById("report-content").innerHTML += html;
                     }
                 });
             });
 
+            const trainingNavButtons = document.getElementById("training-nav-buttons");
+
+            const flow = {
+                intro: { nextBtnText: "Next: Strong Passwords", nextTarget: "password" },
+                password: { nextBtnText: "Take Password Quiz", nextTarget: "quiz-password" },
+                "quiz-password": { nextBtnText: "Submit and Continue Watching MFA", nextTarget: "mfa" },
+                mfa: { nextBtnText: "Take MFA Quiz", nextTarget: "quiz-mfa" },
+                "quiz-mfa": { nextBtnText: "Submit and Continue Watching Summary", nextTarget: "summary" },
+                summary: {
+                    nextBtnTextSurvey: "Take Survey",
+                    nextBtnTextFinish: "Finish",
+                    nextTargetSurvey: "feedback",
+                    nextTargetFinish: "finish"
+                }
+            };
+
+            function clearNavButtons() {
+                trainingNavButtons.innerHTML = "";
+            }
+
+            function showSection(sectionId) {
+                stopAllVideos();
+                document.querySelectorAll("section").forEach((sec) => sec.classList.add("hidden"));
+                document.getElementById(sectionId).classList.remove("hidden");
+            }
+
+            function hideTraining() {
+                document.getElementById("training").classList.add("hidden");
+            }
+
+            function showTrainingVideo(videoKey) {
+                document.getElementById("training").classList.remove("hidden");
+
+                const videoDiv = document.getElementById(`${videoKey}-video`);
+                if (videoDiv) {
+                    document.querySelectorAll(".training-video").forEach((div) => div.classList.add("hidden"));
+                    videoDiv.classList.remove("hidden");
+
+                    const vid = videoDiv.querySelector("video");
+                    if (vid) {
+                        vid.currentTime = 0;
+                        vid.play();
+
+                        // IMPORTANT: Reattach the onended logic
+                        vid.onended = () => {
+                            clearNavButtons();
+
+                            if (flow[videoKey]) {
+                                if (videoKey === "summary") {
+                                    const surveyBtn = document.createElement("button");
+                                    surveyBtn.className = "bg-green-500 text-white px-4 py-2 rounded";
+                                    surveyBtn.textContent = flow[videoKey].nextBtnTextSurvey;
+                                    surveyBtn.addEventListener("click", () => {
+                                        showSection("feedback");
+                                    });
+
+                                    const finishBtn = document.createElement("button");
+                                    finishBtn.className = "bg-blue-600 text-white px-4 py-2 rounded";
+                                    finishBtn.textContent = flow[videoKey].nextBtnTextFinish;
+                                    finishBtn.addEventListener("click", () => {
+                                        alert("🎉 Congrats, you've finished the training!");
+                                    });
+
+                                    trainingNavButtons.appendChild(surveyBtn);
+                                    trainingNavButtons.appendChild(finishBtn);
+                                } else {
+                                    const nextBtn = document.createElement("button");
+                                    nextBtn.className = "bg-blue-600 text-white px-4 py-2 rounded";
+                                    nextBtn.textContent = flow[videoKey].nextBtnText;
+
+                                    nextBtn.addEventListener("click", () => {
+                                        clearNavButtons();
+
+                                        if (flow[videoKey].nextTarget.startsWith("quiz")) {
+    if (flow[videoKey].nextTarget === "quiz-password") {
+        loadQuiz("password", true); // Pass fromTraining = true
+    } else if (flow[videoKey].nextTarget === "quiz-mfa") {
+        loadQuiz("mfa", true); // Pass fromTraining = true
+    }
+    showSection("quiz");
+    hideTraining();
+                                        } else {
+                                            showTrainingVideo(flow[videoKey].nextTarget);
+                                        }
+                                    });
+
+                                    trainingNavButtons.appendChild(nextBtn);
+                                }
+                            }
+                        };
+                    }
+                }
+            }
+
             document.querySelectorAll(".training-option").forEach((btn) => {
                 btn.addEventListener("click", () => {
                     stopAllVideos();
+                    clearNavButtons();
                     document.querySelectorAll(".training-video").forEach((div) => div.classList.add("hidden"));
+
                     const selected = btn.dataset.video;
                     const videoEl = document.getElementById(`${selected}-video`);
-                    videoEl.classList.remove("hidden");
-                    const vid = videoEl.querySelector("video");
-                    vid.currentTime = 0;
-                    vid.play();
-                    vid.onended = () => {
-                        document.querySelectorAll("section").forEach((sec) => sec.classList.add("hidden"));
-                        document.getElementById("quiz").classList.remove("hidden");
-                    };
+
+                    if (videoEl) {
+                        videoEl.classList.remove("hidden");
+                        const vid = videoEl.querySelector("video");
+                        if (vid) {
+                            vid.currentTime = 0;
+                            vid.play();
+
+                            // Remove old listener
+                            vid.onended = null;
+
+                            vid.onended = () => {
+                                clearNavButtons();
+
+                                if (flow[selected]) {
+                                    if (selected === "summary") {
+                                        const surveyBtn = document.createElement("button");
+                                        surveyBtn.className = "bg-green-500 text-white px-4 py-2 rounded";
+                                        surveyBtn.textContent = flow[selected].nextBtnTextSurvey;
+                                        surveyBtn.addEventListener("click", () => {
+                                            showSection("feedback");
+                                        });
+
+                                        const finishBtn = document.createElement("button");
+                                        finishBtn.className = "bg-blue-600 text-white px-4 py-2 rounded";
+                                        finishBtn.textContent = flow[selected].nextBtnTextFinish;
+                                        finishBtn.addEventListener("click", () => {
+                                            alert("🎉 Congrats, you've finished the training!");
+                                        });
+
+                                        trainingNavButtons.appendChild(surveyBtn);
+                                        trainingNavButtons.appendChild(finishBtn);
+                                    } else {
+                                        const nextBtn = document.createElement("button");
+                                        nextBtn.className = "bg-blue-600 text-white px-4 py-2 rounded";
+                                        nextBtn.textContent = flow[selected].nextBtnText;
+
+                                        nextBtn.addEventListener("click", () => {
+                                            clearNavButtons();
+
+                                            if (flow[selected].nextTarget.startsWith("quiz")) {
+                                                if (flow[selected].nextTarget === "quiz-password") {
+                                                    loadQuiz("password");
+                                                } else if (flow[selected].nextTarget === "quiz-mfa") {
+                                                    loadQuiz("mfa");
+                                                }
+                                                showSection("quiz");
+                                                hideTraining();
+                                            } else {
+                                                showTrainingVideo(flow[selected].nextTarget);
+                                            }
+                                        });
+
+                                        trainingNavButtons.appendChild(nextBtn);
+                                    }
+                                }
+                            };
+                        }
+                    } else {
+                        alert(`Video section for "${selected}" not found!`);
+                    }
                 });
             });
 
@@ -336,40 +640,47 @@
             const quizQuestionsDiv = document.getElementById("quiz-questions");
             const quizResult = document.getElementById("quiz-result");
 
-            function loadQuiz(topic) {
-                quizQuestionsDiv.innerHTML = "";
-                quizResult.innerText = "";
-                quizForm.reset();
+            function loadQuiz(topic, fromTraining = false) {
+    quizQuestionsDiv.innerHTML = "";
+    quizResult.innerText = "";
+    quizForm.reset();
 
-                quizData[topic].forEach((q, index) => {
-                    const qBlock = document.createElement("div");
-                    qBlock.className = "mb-4";
+    quizTopicSelect.value = topic;
+    startQuizBtn.style.display = "none";
 
-                    const label = document.createElement("label");
-                    label.className = "block font-semibold mb-1";
-                    label.innerText = `${index + 1}. ${q.question}`;
+    // Hide dropdown if coming from training
+    quizTopicSelect.parentElement.style.display = fromTraining ? "none" : "block";
 
-                    const select = document.createElement("select");
-                    select.className = "w-full p-2 border rounded";
-                    select.name = `q${index}`;
+    quizData[topic].forEach((q, index) => {
+        const qBlock = document.createElement("div");
+        qBlock.className = "mb-4";
 
-                    const defaultOption = document.createElement("option");
-                    defaultOption.value = "";
-                    defaultOption.innerText = "-- Select --";
-                    select.appendChild(defaultOption);
+        const label = document.createElement("label");
+        label.className = "block font-semibold mb-1";
+        label.innerText = `${index + 1}. ${q.question}`;
 
-                    q.options.forEach((option) => {
-                        const opt = document.createElement("option");
-                        opt.value = option;
-                        opt.innerText = option;
-                        select.appendChild(opt);
-                    });
+        const select = document.createElement("select");
+        select.className = "w-full p-2 border rounded";
+        select.name = `q${index}`;
 
-                    qBlock.appendChild(label);
-                    qBlock.appendChild(select);
-                    quizQuestionsDiv.appendChild(qBlock);
-                });
-                quizForm.classList.remove("hidden");
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.innerText = "-- Select --";
+        select.appendChild(defaultOption);
+
+        q.options.forEach((option) => {
+            const opt = document.createElement("option");
+            opt.value = option;
+            opt.innerText = option;
+            select.appendChild(opt);
+        });
+
+        qBlock.appendChild(label);
+        qBlock.appendChild(select);
+        quizQuestionsDiv.appendChild(qBlock);
+    });
+
+    quizForm.classList.remove("hidden");
             }
 
             startQuizBtn.addEventListener("click", () => {
@@ -413,8 +724,38 @@
                     percentage >= 70
                         ? `✅ Great job! You scored ${percentage}%.`
                         : `❌ You scored ${percentage}%. Please review the training and try again.`;
+
+                // Create Continue button
+                const continueBtn = document.createElement("button");
+                continueBtn.className = "bg-blue-600 text-white px-4 py-2 rounded mt-4 ml-2";
+
+                // Set button text and logic based on quiz topic
+                if (selectedTopic === "password") {
+                    continueBtn.textContent =
+                        percentage >= 70 ? "Continue to MFA Video" : "Review Strong Passwords Video";
+                } else if (selectedTopic === "mfa") {
+                    continueBtn.textContent = percentage >= 70 ? "Continue to Summary Video" : "Review MFA Video";
+                }
+
+                continueBtn.addEventListener("click", () => {
+                    quizForm.classList.add("hidden");
+                    quizTopicSelect.value = "";
+                    quizQuestionsDiv.innerHTML = "";
+                    quizResult.innerText = "";
+                    startQuizBtn.style.display = "inline-block";
+                    showSection("training");
+
+                    // Redirect based on pass/fail
+                    if (selectedTopic === "password") {
+                        showTrainingVideo(percentage >= 70 ? "mfa" : "password");
+                    } else if (selectedTopic === "mfa") {
+                        showTrainingVideo(percentage >= 70 ? "summary" : "mfa");
+                    }
+                });
+
+                quizResult.appendChild(document.createElement("br")); // Add line break
+quizResult.appendChild(continueBtn);
             });
         </script>
-
     </body>
 </html>
