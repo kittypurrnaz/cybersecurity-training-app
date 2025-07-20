@@ -82,7 +82,8 @@
             <nav data-brackets-id="621" class="flex justify-center gap-4 mb-6">
                 <button
                     data-brackets-id="622"
-                    button class="tab px-4 py-2 bg-blue-100 text-blue-700 font-semibold rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200"
+                    button
+                    class="tab px-4 py-2 bg-blue-100 text-blue-700 font-semibold rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200"
                     data-target="training">
                     Training
                 </button>
@@ -112,15 +113,24 @@
                     <h2 class="text-2xl font-bold mb-4">Training Content</h2>
 
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                        <button class="training-option bg-blue-200 px-4 py-2 rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200" data-video="intro">
+                        <button
+                            class="training-option bg-blue-200 px-4 py-2 rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200"
+                            data-video="intro">
                             Cybersecurity Essentials
                         </button>
-                        <button class="training-option bg-blue-200 px-4 py-2 rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200" data-video="password">
+                        <button
+                            class="training-option bg-blue-200 px-4 py-2 rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200"
+                            data-video="password">
                             Strong Passwords
                         </button>
-                        <button class="training-option bg-blue-200 px-4 py-2 rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200" data-video="mfa">
-                            MFA</button>
-                        <button class="training-option bg-blue-200 px-4 py-2 rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200" data-video="summary">
+                        <button
+                            class="training-option bg-blue-200 px-4 py-2 rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200"
+                            data-video="mfa">
+                            MFA
+                        </button>
+                        <button
+                            class="training-option bg-blue-200 px-4 py-2 rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200"
+                            data-video="summary">
                             Summary
                         </button>
                     </div>
@@ -246,10 +256,10 @@
                 <section data-brackets-id="675" id="report" class="hidden bg-white p-6 rounded shadow">
                     <h2 data-brackets-id="676" class="text-2xl font-bold mb-4">Report</h2>
                     <div id="report-content" class="text-gray-800">
-    <p><strong>Name:</strong> <span id="report-name"></span></p>
-    <p><strong>ID:</strong> <span id="report-id"></span></p>
-    <hr class="my-4" />
-</div>
+                        <p><strong>Name:</strong> <span id="report-name"></span></p>
+                        <p><strong>ID:</strong> <span id="report-id"></span></p>
+                        <hr class="my-4" />
+                    </div>
                 </section>
             </main>
         </div>
@@ -349,39 +359,39 @@
                     stopAllVideos();
                     document.querySelectorAll("section").forEach((sec) => sec.classList.add("hidden"));
                     document.getElementById(target).classList.remove("hidden");
-                    
+
                     if (target === "quiz") {
-    quizTopicSelect.parentElement.style.display = "block"; // Ensure dropdown is shown
-    quizForm.classList.add("hidden");
-    quizQuestionsDiv.innerHTML = "";
-    quizResult.innerText = "";
-    startQuizBtn.style.display = "inline-block";
-    quizTopicSelect.value = "";
-}
+                        quizTopicSelect.parentElement.style.display = "block"; // Ensure dropdown is shown
+                        quizForm.classList.add("hidden");
+                        quizQuestionsDiv.innerHTML = "";
+                        quizResult.innerText = "";
+                        startQuizBtn.style.display = "inline-block";
+                        quizTopicSelect.value = "";
+                    }
 
                     if (target === "report") {
-    const report = document.getElementById("report-content");
+                        const report = document.getElementById("report-content");
 
-    // Set name and ID
-    document.getElementById("report-name").innerText = auth.currentUser.displayName || "N/A";
-    document.getElementById("report-id").innerText = auth.currentUser.email || "N/A";
+                        // Set name and ID
+                        document.getElementById("report-name").innerText = auth.currentUser.displayName || "N/A";
+                        document.getElementById("report-id").innerText = auth.currentUser.email || "N/A";
 
-    let html = "";
+                        let html = "";
 
-    if (passwordScore !== null) {
-        html += `<p><strong>Password Quiz Completed:</strong> Yes</p><p><strong>Score:</strong> ${passwordScore}%</p><hr class="my-2" />`;
-    } else {
-        html += `<p><strong>Password Quiz Completed:</strong> No</p><hr class="my-2" />`;
-    }
+                        if (passwordScore !== null) {
+                            html += `<p><strong>Password Quiz Completed:</strong> Yes</p><p><strong>Score:</strong> ${passwordScore}%</p><hr class="my-2" />`;
+                        } else {
+                            html += `<p><strong>Password Quiz Completed:</strong> No</p><hr class="my-2" />`;
+                        }
 
-    if (mfaScore !== null) {
-        html += `<p><strong>MFA Quiz Completed:</strong> Yes</p><p><strong>Score:</strong> ${mfaScore}%</p>`;
-    } else {
-        html += `<p><strong>MFA Quiz Completed:</strong> No</p>`;
-    }
+                        if (mfaScore !== null) {
+                            html += `<p><strong>MFA Quiz Completed:</strong> Yes</p><p><strong>Score:</strong> ${mfaScore}%</p>`;
+                        } else {
+                            html += `<p><strong>MFA Quiz Completed:</strong> No</p>`;
+                        }
 
-    // Append the quiz report after Name and ID section
-    document.getElementById("report-content").innerHTML += html;
+                        // Append the quiz report after Name and ID section
+                        document.getElementById("report-content").innerHTML += html;
                     }
                 });
             });
@@ -460,13 +470,13 @@
                                         clearNavButtons();
 
                                         if (flow[videoKey].nextTarget.startsWith("quiz")) {
-    if (flow[videoKey].nextTarget === "quiz-password") {
-        loadQuiz("password", true); // Pass fromTraining = true
-    } else if (flow[videoKey].nextTarget === "quiz-mfa") {
-        loadQuiz("mfa", true); // Pass fromTraining = true
-    }
-    showSection("quiz");
-    hideTraining();
+                                            if (flow[videoKey].nextTarget === "quiz-password") {
+                                                loadQuiz("password", true); // Pass fromTraining = true
+                                            } else if (flow[videoKey].nextTarget === "quiz-mfa") {
+                                                loadQuiz("mfa", true); // Pass fromTraining = true
+                                            }
+                                            showSection("quiz");
+                                            hideTraining();
                                         } else {
                                             showTrainingVideo(flow[videoKey].nextTarget);
                                         }
@@ -555,81 +565,79 @@
             const quizData = {
                 password: [
                     {
-                        question: "What is a strong password?",
-                        options: ["12345678", "password123", "Long, complex, and unique", "Your name and birth year"],
-                        answer: "Long, complex, and unique"
+                        question: "What is the main purpose of a password?",
+                        options: ["To speed up browsing", "To prove your identity and restrict access", "To back up data", "To store photos"],
+                        answer: "To prove your identity and restrict access"
                     },
                     {
-                        question: "Which is a good practice?",
+                        question: "Which of the following is considered a strong password?",
                         options: [
-                            "Reusing old passwords",
-                            "Using your dog's name",
-                            "Using a password manager",
-                            "Writing passwords on paper"
+                            "password123",
+                            "iloveyou",
+                            "Zebra$R0cks2024",
+                            "mynameisjohn"
                         ],
-                        answer: "Using a password manager"
+                        answer: "Zebra$R0cks2024"
                     },
                     {
-                        question: "Why should passwords be long?",
+                        question: "Why is it not advisable to reuse passwords on different accounts?",
                         options: [
-                            "To look fancy",
-                            "To avoid typing errors",
-                            "To resist brute-force attacks",
-                            "No reason"
+                            "It slows down your phone",
+                            "It makes updates harder",
+                            "One breach can affect multiple accounts",
+                            "It helps websites load faster"
                         ],
-                        answer: "To resist brute-force attacks"
+                        answer: "One breach can affect multiple accounts"
                     },
                     {
-                        question: "What’s the issue with using ‘password’ as your password?",
-                        options: ["Nothing at all", "It's too strong", "It’s easily guessed", "It's too long"],
-                        answer: "It’s easily guessed"
+                        question: "What is NOT recommended when creating a password?",
+                        options: ["Use at least 12 characters", "Include your pet’s name and birthday", "Add numbers and symbols", "Avoid common phrases"],
+                        answer: "Include your pet’s name and birthday"
                     },
                     {
-                        question: "How often should you change passwords?",
-                        options: ["Never", "Only when hacked", "Regularly or when breached", "Every 2 days"],
-                        answer: "Regularly or when breached"
+                        question: "True or False: It’s okay to write your password on a sticky note near your computer.",
+                        options: ["True", "False"],
+                        answer: "False"
                     }
                 ],
                 mfa: [
                     {
-                        question: "What does MFA stand for?",
+                        question: "What does “Multi-Factor Authentication” (MFA) mean?",
                         options: [
-                            "Multiple File Access",
-                            "Multi-Factor Authentication",
-                            "Managed Firewall Access",
-                            "Multi-Face Approval"
+                            "Logging in with just a longer password",
+                            "Using multiple passwords for one account",
+                            "Verifying identity using two or more different types of security factors",
+                            "Logging in from two devices at once"
                         ],
-                        answer: "Multi-Factor Authentication"
+                        answer: "Verifying identity using two or more different types of security factors"
                     },
                     {
-                        question: "Why use MFA?",
+                        question: "You can set up MFA on most common services like Gmail, Facebook, and student portals.",
                         options: [
-                            "It slows down hackers",
-                            "To double your passwords",
-                            "To use one-time passwords only",
-                            "It's mandatory"
+                            "True",
+                            "False",
                         ],
-                        answer: "It slows down hackers"
+                        answer: "True"
                     },
                     {
-                        question: "What’s a common second factor?",
-                        options: ["Password", "Date of birth", "OTP sent to your phone", "Your username"],
-                        answer: "OTP sent to your phone"
+                        question: "Why is MFA effective against hackers?",
+                        options: ["It blocks access from all devices", "It deletes your password if someone tries to log in", "It requires more than just a password to gain access", "It hides your account from public view"],
+                        answer: "It requires more than just a password to gain access"
                     },
                     {
-                        question: "Is MFA effective even if password is compromised?",
+                        question: "Which of the following is NOT a valid MFA factor?",
                         options: [
-                            "Yes, it adds another layer",
-                            "No, it disables your account",
-                            "It only delays login",
-                            "It replaces passwords"
+                            "Something you know (e.g., password)",
+                            "Something you have (e.g., authentication token)",
+                            "Something you like",
+                            "Something you are (e.g., fingerprint)"
                         ],
-                        answer: "Yes, it adds another layer"
+                        answer: "Something you like"
                     },
                     {
-                        question: "Which is NOT an MFA method?",
-                        options: ["Fingerprint", "Security key", "Email verification", "Typing speed"],
-                        answer: "Typing speed"
+                        question: "True or False: Using MFA means you no longer need to create strong passwords.",
+                        options: ["True", "False"],
+                        answer: "False"
                     }
                 ]
             };
@@ -641,46 +649,46 @@
             const quizResult = document.getElementById("quiz-result");
 
             function loadQuiz(topic, fromTraining = false) {
-    quizQuestionsDiv.innerHTML = "";
-    quizResult.innerText = "";
-    quizForm.reset();
+                quizQuestionsDiv.innerHTML = "";
+                quizResult.innerText = "";
+                quizForm.reset();
 
-    quizTopicSelect.value = topic;
-    startQuizBtn.style.display = "none";
+                quizTopicSelect.value = topic;
+                startQuizBtn.style.display = "none";
 
-    // Hide dropdown if coming from training
-    quizTopicSelect.parentElement.style.display = fromTraining ? "none" : "block";
+                // Hide dropdown if coming from training
+                quizTopicSelect.parentElement.style.display = fromTraining ? "none" : "block";
 
-    quizData[topic].forEach((q, index) => {
-        const qBlock = document.createElement("div");
-        qBlock.className = "mb-4";
+                quizData[topic].forEach((q, index) => {
+                    const qBlock = document.createElement("div");
+                    qBlock.className = "mb-4";
 
-        const label = document.createElement("label");
-        label.className = "block font-semibold mb-1";
-        label.innerText = `${index + 1}. ${q.question}`;
+                    const label = document.createElement("label");
+                    label.className = "block font-semibold mb-1";
+                    label.innerText = `${index + 1}. ${q.question}`;
 
-        const select = document.createElement("select");
-        select.className = "w-full p-2 border rounded";
-        select.name = `q${index}`;
+                    const select = document.createElement("select");
+                    select.className = "w-full p-2 border rounded";
+                    select.name = `q${index}`;
 
-        const defaultOption = document.createElement("option");
-        defaultOption.value = "";
-        defaultOption.innerText = "-- Select --";
-        select.appendChild(defaultOption);
+                    const defaultOption = document.createElement("option");
+                    defaultOption.value = "";
+                    defaultOption.innerText = "-- Select --";
+                    select.appendChild(defaultOption);
 
-        q.options.forEach((option) => {
-            const opt = document.createElement("option");
-            opt.value = option;
-            opt.innerText = option;
-            select.appendChild(opt);
-        });
+                    q.options.forEach((option) => {
+                        const opt = document.createElement("option");
+                        opt.value = option;
+                        opt.innerText = option;
+                        select.appendChild(opt);
+                    });
 
-        qBlock.appendChild(label);
-        qBlock.appendChild(select);
-        quizQuestionsDiv.appendChild(qBlock);
-    });
+                    qBlock.appendChild(label);
+                    qBlock.appendChild(select);
+                    quizQuestionsDiv.appendChild(qBlock);
+                });
 
-    quizForm.classList.remove("hidden");
+                quizForm.classList.remove("hidden");
             }
 
             startQuizBtn.addEventListener("click", () => {
@@ -754,7 +762,7 @@
                 });
 
                 quizResult.appendChild(document.createElement("br")); // Add line break
-quizResult.appendChild(continueBtn);
+                quizResult.appendChild(continueBtn);
             });
         </script>
     </body>
