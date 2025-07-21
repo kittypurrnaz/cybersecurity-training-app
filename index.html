@@ -1,21 +1,18 @@
 <!doctype html>
-<html data-brackets-id="595" lang="en">
-    <head data-brackets-id="596">
-        <script src="phoenix_live_preview_scripts_instrumented_t3doKTXi.js"></script>
-        <meta data-brackets-id="597" charset="UTF-8" />
-        <meta data-brackets-id="598" name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title data-brackets-id="599">Cybersecurity Training Package</title>
-        <script data-brackets-id="600" src="https://cdn.tailwindcss.com"></script>
-        <link
-            data-brackets-id="601"
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
-            rel="stylesheet" />
-        <script data-brackets-id="602" src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
-        <script data-brackets-id="603" src="https://www.gstatic.com/firebasejs/9.17.2/firebase-auth-compat.js"></script>
-        <style data-brackets-id="604">
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Cybersecurity Training Package</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+        <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-auth-compat.js"></script>
+        <style>
             body {
                 font-family: "Inter", sans-serif;
-                background-color: #f9fafb;
+                background-color: #f0f4f8; /* A slightly softer background, less important with video */
+                overflow-x: hidden; /* Prevent horizontal scrollbars */
             }
             .hidden {
                 display: none;
@@ -23,260 +20,956 @@
             .active {
                 display: block;
             }
+
+            /* Styles for the background video */
+            #background-video {
+                position: fixed; /* Fixes the video to the viewport */
+                right: 0;
+                bottom: 0;
+                min-width: 100%;
+                min-height: 100%;
+                width: auto;
+                height: auto;
+                z-index: -100; /* Puts it behind all other content */
+                filter: brightness(0.7) blur(2px); /* Slightly darken and blur the video for readability */
+            }
+
+            /* Custom active tab style */
+            .tab.active-tab {
+                background-color: #2563eb; /* Blue-700 */
+                color: white;
+                box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.1);
+            }
+
+            /* Accordion styles */
+            .accordion-header {
+                cursor: pointer;
+                user-select: none;
+            }
+            .accordion-content {
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease-out;
+            }
+            .accordion-content.open {
+                max-height: 1000px; /* Adjust based on expected content height */
+                transition: max-height 0.5s ease-in;
+            }
+
+            /* --- New styles for MCQ options (copied and adapted from your example CSS) --- */
+            .mcq-option {
+                display: flex;
+                align-items: center;
+                padding: 12px;
+                margin-bottom: 8px;
+                border: 1px solid #cbd5e1; /* Tailwind's slate-300 */
+                border-radius: 0.375rem; /* Tailwind's rounded-md */
+                cursor: pointer;
+                transition: all 0.2s ease-in-out;
+            }
+
+            .mcq-option:hover {
+                background-color: #f0f4f8; /* A light grey, similar to gray-50 */
+                border-color: #93c5fd; /* Tailwind's blue-300 */
+            }
+
+            .mcq-option input[type="radio"] {
+                margin-right: 12px;
+                /* Hide default radio button, style custom one */
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+                width: 20px;
+                height: 20px;
+                border: 2px solid #64748b; /* Tailwind's slate-600 */
+                border-radius: 50%;
+                outline: none;
+                cursor: pointer;
+                position: relative;
+                flex-shrink: 0; /* Prevent shrinking */
+            }
+
+            .mcq-option input[type="radio"]:checked {
+                background-color: #3b82f6; /* Tailwind's blue-500 */
+                border-color: #3b82f6; /* Tailwind's blue-500 */
+            }
+
+            .mcq-option input[type="radio"]:checked::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background-color: white;
+            }
+
+            .mcq-option-label {
+                font-weight: 500; /* Medium font weight */
+                color: #334155; /* Tailwind's slate-700 */
+                flex-grow: 1; /* Allows label to take up remaining space */
+            }
+
+            /* Highlight selected option's background */
+            .mcq-option.selected {
+                background-color: #dbeafe; /* Tailwind's blue-100 */
+                border-color: #60a5fa; /* Tailwind's blue-400 */
+            }
+            /* --- End New styles for MCQ options --- */
         </style>
     </head>
-    <body class="min-h-screen bg-gray-100 text-gray-800 p-6">
-        <div id="auth-section" class="flex justify-center items-center h-screen">
-            <div class="bg-white p-6 rounded shadow w-full max-w-sm">
-                <h2 class="text-2xl font-bold mb-4 text-center">Login</h2>
-                <input id="email" type="email" placeholder="Email" class="w-full mb-2 p-2 border rounded" />
-                <input id="password" type="password" placeholder="Password" class="w-full mb-4 p-2 border rounded" />
-                <button id="login-btn" class="bg-blue-600 text-white w-full py-2 rounded">Login</button>
-                <p id="auth-error" class="text-red-600 text-sm mt-2 text-center"></p>
-                <p class="text-center mt-2">
+    <body class="min-h-screen text-gray-800 p-6 relative">
+        <video autoplay muted loop playsinline id="background-video">
+            <source src="your-background-video.mp4" type="video/mp4" />
+            <source src="your-background-video.webm" type="video/webm" />
+            Your browser does not support the video tag.
+        </video>
+
+        <div id="auth-section" class="flex justify-center items-center h-screen relative z-10">
+            <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md transform transition-all duration-300 hover:scale-105">
+                <div class="flex justify-center mb-6">
+                    <img src="securitylogo.png" alt="Company Logo" class="h-24 w-auto object-contain" />
+                </div>
+                <h2 class="text-3xl font-extrabold mb-6 text-center text-gray-800">Cyber Training</h2>
+                <input
+                    id="email"
+                    type="email"
+                    placeholder="Email"
+                    class="w-full mb-4 p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                />
+                <input
+                    id="password"
+                    type="password"
+                    placeholder="Password"
+                    class="w-full mb-6 p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                />
+                <button
+                    id="login-btn"
+                    class="bg-blue-700 hover:bg-blue-800 text-white w-full py-3 rounded-md font-semibold text-lg transition duration-300 ease-in-out transform hover:-translate-y-1"
+                >
+                    Sign In
+                </button>
+                <p id="auth-error" class="text-red-600 text-sm mt-3 text-center"></p>
+                <p class="text-center mt-4 text-gray-600">
                     Don't have an account?
-                    <button id="show-signup" class="text-blue-600 underline">Sign Up</button>
+                    <button id="show-signup" class="text-blue-600 hover:text-blue-800 underline font-medium">
+                        Sign Up
+                    </button>
                 </p>
             </div>
         </div>
 
-        <div id="signup-form" class="hidden flex justify-center items-center h-screen">
-            <div class="bg-white p-6 rounded shadow w-full max-w-sm">
-                <h2 class="text-2xl font-bold mb-4 text-center">Create Account</h2>
-                <input id="signup-name" type="text" placeholder="Full Name" class="w-full mb-2 p-2 border rounded" />
+        <div id="signup-form" class="hidden flex justify-center items-center h-screen relative z-10">
+            <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md transform transition-all duration-300 hover:scale-105">
+                <div class="flex justify-center mb-6">
+                    <img src="securitylogo.png" alt="Company Logo" class="h-24 w-auto object-contain" />
+                </div>
+                <h2 class="text-3xl font-extrabold mb-6 text-center text-gray-800">Create Your Account</h2>
+                <input
+                    id="signup-name"
+                    type="text"
+                    placeholder="Full Name"
+                    class="w-full mb-4 p-3 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 transition duration-200"
+                />
                 <input
                     id="signup-email"
                     type="email"
                     placeholder="Student Email"
-                    class="w-full mb-2 p-2 border rounded" />
+                    class="w-full mb-4 p-3 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 transition duration-200"
+                />
                 <input
                     id="signup-password"
                     type="password"
                     placeholder="Password"
-                    class="w-full mb-4 p-2 border rounded" />
-                <button id="signup-btn" class="bg-green-600 text-white w-full py-2 rounded">Sign Up</button>
-                <p id="signup-error" class="text-red-600 text-sm mt-2 text-center"></p>
-                <p class="text-center mt-2">
+                    class="w-full mb-6 p-3 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 transition duration-200"
+                />
+                <button
+                    id="signup-btn"
+                    class="bg-green-600 hover:bg-green-700 text-white w-full py-3 rounded-md font-semibold text-lg transition duration-300 ease-in-out transform hover:-translate-y-1"
+                >
+                    Register
+                </button>
+                <p id="signup-error" class="text-red-600 text-sm mt-3 text-center"></p>
+                <p class="text-center mt-4 text-gray-600">
                     Already have an account?
-                    <button id="back-to-login" class="text-blue-600 underline">Back to Login</button>
+                    <button id="back-to-login" class="text-blue-600 hover:text-blue-800 underline font-medium">
+                        Back to Login
+                    </button>
                 </p>
             </div>
         </div>
 
-        <div data-brackets-id="613" id="main-app" class="hidden">
-            <header data-brackets-id="614" class="flex justify-between items-center mb-10">
-                <div data-brackets-id="615" class="text-center w-full">
-                    <h1 data-brackets-id="616" class="text-4xl font-bold text-blue-600">
+        <div id="main-app" class="hidden min-h-screen flex flex-col items-center py-8 px-4 relative z-10">
+            <header class="w-full max-w-5xl flex flex-col md:flex-row justify-between items-center mb-10 bg-white bg-opacity-90 backdrop-blur-sm rounded-xl p-6 shadow-lg">
+                <div class="text-center md:text-left flex-grow mb-4 md:mb-0">
+                    <h1 class="text-4xl font-extrabold text-blue-800 leading-tight">
                         Cybersecurity Awareness Training
                     </h1>
-                    <p data-brackets-id="617" class="text-lg mt-2">
+                    <p class="text-lg mt-2 text-gray-600">
                         Empowering students with essential knowledge to stay safe online.
                     </p>
                 </div>
-                <div data-brackets-id="618" class="absolute top-4 right-6 bg-white p-3 rounded shadow">
-                    <p data-brackets-id="619" id="user-name" class="font-semibold"></p>
-                    <p data-brackets-id="620" id="user-email" class="text-sm text-gray-600"></p>
+                <div class="bg-blue-100 text-blue-800 p-4 rounded-lg shadow-inner text-sm md:text-base text-right">
+                    <p id="user-name" class="font-bold">Loading User...</p>
+                    <p id="user-email" class="text-blue-700"></p>
+                    <button id="logout-btn" class="mt-2 text-red-500 hover:text-red-700 text-sm font-semibold">Log Out</button>
                 </div>
             </header>
 
-            <nav data-brackets-id="621" class="flex justify-center gap-4 mb-6">
-                <button
-                    data-brackets-id="622"
-                    button
-                    class="tab px-4 py-2 bg-blue-100 text-blue-700 font-semibold rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200"
-                    data-target="training">
-                    Training
+            <nav class="flex flex-wrap justify-center gap-3 mb-8 w-full max-w-3xl">
+                <button class="tab px-6 py-3 bg-blue-100 text-blue-700 font-semibold rounded-full transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-md active-tab" data-target="training">
+                    📚 Training Modules
                 </button>
-                <button
-                    data-brackets-id="623"
-                    class="tab px-4 py-2 bg-blue-100 text-blue-700 font-semibold rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200"
-                    data-target="quiz">
-                    Quiz
+                <button class="tab px-6 py-3 bg-blue-100 text-blue-700 font-semibold rounded-full transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-md" data-target="quiz">
+                    📝 Quizzes
                 </button>
-                <button
-                    data-brackets-id="624"
-                    class="tab px-4 py-2 bg-blue-100 text-blue-700 font-semibold rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200"
-                    data-target="feedback">
-                    Survey
+                <button class="tab px-6 py-3 bg-blue-100 text-blue-700 font-semibold rounded-full transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-md" data-target="feedback">
+                    🗣️ Survey
                 </button>
-                <button
-                    data-brackets-id="625"
-                    class="tab px-4 py-2 bg-blue-100 text-blue-700 font-semibold rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200"
-                    data-target="report">
-                    Report
+                <button class="tab px-6 py-3 bg-blue-100 text-blue-700 font-semibold rounded-full transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-md" data-target="report">
+                    📊 My Report
                 </button>
             </nav>
 
-            <main data-brackets-id="626" class="max-w-3xl mx-auto">
-                <!-- Training Module -->
-                <section id="training" class="active bg-white p-6 rounded shadow">
-                    <h2 class="text-2xl font-bold mb-4">Training Content</h2>
+            <main class="w-full max-w-5xl bg-white bg-opacity-95 backdrop-blur-sm p-8 rounded-xl shadow-2xl animate-fade-in-up">
+                <section id="training" class="active">
+                    <h2 class="text-3xl font-extrabold mb-6 text-gray-800 border-b-2 pb-3 border-blue-200">
+                        Cybersecurity Training Modules
+                    </h2>
 
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                        <button
-                            class="training-option bg-blue-200 px-4 py-2 rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200"
-                            data-video="intro">
-                            Cybersecurity Essentials
-                        </button>
-                        <button
-                            class="training-option bg-blue-200 px-4 py-2 rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200"
-                            data-video="password">
-                            Strong Passwords
-                        </button>
-                        <button
-                            class="training-option bg-blue-200 px-4 py-2 rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200"
-                            data-video="mfa">
-                            MFA
-                        </button>
-                        <button
-                            class="training-option bg-blue-200 px-4 py-2 rounded transition transform hover:-translate-y-1 hover:scale-105 hover:bg-blue-300 duration-200"
-                            data-video="summary">
-                            Summary
-                        </button>
+                    <div id="training-modules-container" class="space-y-4">
                     </div>
-
-                    <!-- Introduction -->
-                    <div id="intro-video" class="training-video hidden">
-                        <h3 class="text-xl font-semibold mb-2">Module 0: Cybersecurity Essentials</h3>
-                        <p class="mb-4">An overview of key cybersecurity principles and why this training matters.</p>
-                        <video id="video-intro" controls class="w-full rounded shadow">
-                            <source src="intro.mp4" type="video/mp4" />
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-
-                    <!-- Strong Passwords -->
-                    <div id="password-video" class="training-video hidden">
-                        <h3 class="text-xl font-semibold mb-2">Module 1: Strong Passwords</h3>
-                        <p class="mb-4">
-                            Use long, complex, and unique passwords. Avoid reusing the same password. Consider using a
-                            password manager.
-                        </p>
-                        <video id="video-password" controls class="w-full rounded shadow">
-                            <source src="password.mp4" type="video/mp4" />
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-
-                    <!-- Multi-Factor Authentication -->
-                    <div id="mfa-video" class="training-video hidden">
-                        <h3 class="text-xl font-semibold mb-2">Module 2: Multi-Factor Authentication</h3>
-                        <p class="mb-4">
-                            MFA adds an extra layer of security. Even if your password is stolen, the second factor
-                            keeps you protected.
-                        </p>
-                        <video id="video-mfa" controls class="w-full rounded shadow">
-                            <source src="your-mfa-video.mp4" type="video/mp4" />
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-
-                    <!-- Summary -->
-                    <div id="summary-video" class="training-video hidden">
-                        <h3 class="text-xl font-semibold mb-2">Module 3: Summary</h3>
-                        <p class="mb-4">A recap of all the key takeaways from this training package.</p>
-                        <video id="video-summary" controls class="w-full rounded shadow">
-                            <source src="summary.mp4" type="video/mp4" />
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-
-                    <!-- Navigation Buttons Container -->
-                    <div id="training-nav-buttons" class="mt-4 flex justify-center gap-4"></div>
                 </section>
 
-                <!-- Quiz Module -->
-                <section data-brackets-id="642" id="quiz" class="hidden bg-white p-6 rounded shadow">
-                    <h2 data-brackets-id="643" class="text-2xl font-bold mb-4">Quiz</h2>
+                <section id="quiz" class="hidden">
+                    <h2 class="text-3xl font-extrabold mb-6 text-gray-800 border-b-2 pb-3 border-blue-200">
+                        Assess Your Knowledge
+                    </h2>
 
-                    <!-- Topic Selector -->
-                    <div data-brackets-id="644" id="quiz-selection">
-                        <label data-brackets-id="645" class="block font-semibold mb-2">Select a Quiz Topic:</label>
-                        <select data-brackets-id="646" id="quiz-topic" class="w-full p-2 border rounded mb-4">
-                            <option data-brackets-id="647" value="">-- Choose Topic --</option>
-                            <option data-brackets-id="648" value="password">Strong Passwords</option>
-                            <option data-brackets-id="649" value="mfa">Multi-Factor Authentication</option>
-                        </select>
-                        <button
-                            data-brackets-id="650"
-                            id="start-quiz-btn"
-                            class="bg-blue-600 text-white px-4 py-2 rounded">
-                            Next
-                        </button>
+                    <div id="quiz-modules-container" class="space-y-4">
                     </div>
 
-                    <!-- Actual Quiz Form (Initially Hidden) -->
-                    <form data-brackets-id="651" id="quiz-form" class="hidden mt-6">
-                        <div data-brackets-id="652" id="quiz-questions"></div>
+                    <form id="quiz-form" class="hidden mt-6 bg-white p-6 rounded-lg shadow-lg">
+                        <div id="quiz-questions"></div>
                         <button
-                            data-brackets-id="653"
                             type="submit"
-                            class="bg-blue-600 text-white px-4 py-2 rounded mt-4">
+                            class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md font-semibold text-lg transition duration-300 ease-in-out transform hover:-translate-y-1 mt-6"
+                        >
                             Submit Quiz
                         </button>
                     </form>
 
-                    <div data-brackets-id="654" id="quiz-result" class="mt-4 font-semibold"></div>
+                    <div id="quiz-result" class="mt-6 p-4 rounded-lg text-center text-lg font-semibold hidden"></div>
                 </section>
 
-                <!-- Feedback Module -->
-                <section data-brackets-id="655" id="feedback" class="hidden bg-white p-6 rounded shadow">
-                    <h2 data-brackets-id="656" class="text-2xl font-bold mb-4">Survey</h2>
-                    <form data-brackets-id="657" id="feedback-form">
-                        <label data-brackets-id="658" class="block mb-2">Select your module:</label>
-                        <select data-brackets-id="659" name="rating" class="mb-4 p-2 border w-full rounded">
-                            <option data-brackets-id="660" value="">-- Module --</option>
-                            <option data-brackets-id="662" value="4">Module 0: Cybersecurity Essentials</option>
-                            <option data-brackets-id="661" value="5">Module 1: Strong Passwords</option>
-                            <option data-brackets-id="662" value="4">Module 2: Multi-Factor Authentication</option>
-                            <option data-brackets-id="662" value="4">Module 3: Summary</option>
+                <section id="feedback" class="hidden">
+                    <h2 class="text-3xl font-extrabold mb-6 text-gray-800 border-b-2 pb-3 border-blue-200">
+                        Share Your Feedback
+                    </h2>
+                    <form id="feedback-form" class="bg-blue-50 p-6 rounded-lg shadow-inner">
+                        <label for="feedback-module" class="block mb-2 font-semibold text-blue-700">Select your module</label>
+                        <select id="feedback-module" name="module" class="mb-4 p-3 border border-blue-300 w-full rounded-md focus:ring-blue-500 focus:border-blue-500 transition duration-200 text-gray-700 bg-white">
+                            <option value="">-- Select Module --</option>
+                            <option value="intro">Module 0: Cybersecurity Essentials</option>
+                            <option value="password">Module 1: Strong Passwords</option>
+                            <option value="passwordQuiz">Quiz 1: Password Quiz</option>
+                            <option value="mfa">Module 2: Multi-Factor Authentication</option>
+                            <option value="mfaQuiz">Quiz 2: MFA Quiz</option>
+                            <option value="summary">Module 3: Summary</option>
+                            <option value="completion">Completion</option>
                         </select>
-                        <label data-brackets-id="663" class="block mb-2">How would you rate this module?</label>
-                        <select data-brackets-id="664" name="rating" class="mb-4 p-2 border w-full rounded">
-                            <option data-brackets-id="665" value="">-- Rate --</option>
-                            <option data-brackets-id="666" value="5">Excellent</option>
-                            <option data-brackets-id="667" value="4">Good</option>
-                            <option data-brackets-id="668" value="3">Average</option>
-                            <option data-brackets-id="669" value="2">Poor</option>
-                            <option data-brackets-id="670" value="1">Very Poor</option>
+
+                        <label for="feedback-rating" class="block mb-2 font-semibold text-blue-700">How would you rate this module?</label>
+                        <select id="feedback-rating" name="rating" class="mb-4 p-3 border border-blue-300 w-full rounded-md focus:ring-blue-500 focus:border-blue-500 transition duration-200 text-gray-700 bg-white">
+                            <option value="">-- Rate --</option>
+                            <option value="5">🌟 Excellent</option>
+                            <option value="4">👍 Good</option>
+                            <option value="3">😐 Average</option>
+                            <option value="2">👎 Poor</option>
+                            <option value="1">Worst</option>
                         </select>
-                        <label data-brackets-id="671" class="block mb-2">Any comments?</label>
+                        <label for="feedback-comments" class="block mb-2 font-semibold text-blue-700">Any comments?</label>
                         <textarea
-                            data-brackets-id="672"
+                            id="feedback-comments"
                             name="comments"
-                            class="w-full p-2 border rounded mb-4"></textarea>
-                        <button data-brackets-id="673" type="submit" class="bg-green-500 text-white px-4 py-2 rounded">
+                            rows="5"
+                            class="w-full p-3 border border-blue-300 rounded-md mb-4 focus:ring-blue-500 focus:border-blue-500 transition duration-200 resize-y"
+                            placeholder="Your constructive feedback is highly appreciated!"
+                        ></textarea>
+                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md font-semibold text-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
                             Submit Feedback
                         </button>
                     </form>
-                    <div data-brackets-id="674" id="feedback-msg" class="mt-4 font-semibold text-green-600"></div>
+                    <div id="feedback-msg" class="mt-4 p-4 rounded-lg text-center text-lg font-semibold bg-green-100 text-green-800 hidden"></div>
                 </section>
 
-                <!-- Report Module -->
-                <section data-brackets-id="675" id="report" class="hidden bg-white p-6 rounded shadow">
-                    <h2 data-brackets-id="676" class="text-2xl font-bold mb-4">Report</h2>
-                    <div id="report-content" class="text-gray-800">
-                        <p><strong>Name:</strong> <span id="report-name"></span></p>
-                        <p><strong>ID:</strong> <span id="report-id"></span></p>
-                        <hr class="my-4" />
+                <section id="report" class="hidden">
+                    <h2 class="text-3xl font-extrabold mb-6 text-gray-800 border-b-2 pb-3 border-blue-200">
+                        My Training Report
+                    </h2>
+                    <div id="report-content" class="bg-blue-50 p-6 rounded-lg shadow-inner text-gray-800 space-y-3">
+                        <p class="text-lg"><strong>Name</strong> <span id="report-name" class="font-medium text-blue-700"></span></p>
+                        <p class="text-lg"><strong>Email</strong> <span id="report-id" class="font-medium text-blue-700"></span></p>
+                        <hr class="my-4 border-blue-200" />
+                        <h3 class="text-xl font-bold text-blue-800 mb-3">Training Progress</h3>
+                        <div id="training-report-details" class="space-y-2">
+                            </div>
+                        <h3 class="text-xl font-bold text-blue-800 mb-3 mt-4">Quiz Progress</h3>
+                        <div id="quiz-report-details" class="space-y-2">
+                            </div>
                     </div>
                 </section>
             </main>
         </div>
 
-        <script data-brackets-id="678">
+        <script>
             const firebaseConfig = {
                 apiKey: "AIzaSyAdFptKhxHQj9FDbya9lMUw3e1okcp8Kmk",
                 authDomain: "cybersecurity-training-a-35bbf.firebaseapp.com",
                 projectId: "cybersecurity-training-a-35bbf",
                 storageBucket: "cybersecurity-training-a-35bbf.firebasestorage.app",
                 messagingSenderId: "1080075020112",
-                appId: "1:1080075020112:web:1a2b5a44df03ba6b74ee55"
+                appId: "1:1080075020112:web:1a2b5a44df03ba6b74ee55",
             };
 
             firebase.initializeApp(firebaseConfig);
 
             const auth = firebase.auth();
+
+            // Set persistence to 'none' to always require login on page reload
+            auth.setPersistence(firebase.auth.Auth.Persistence.NONE)
+                .then(() => {
+                    console.log("Authentication persistence set to NONE.");
+                })
+                .catch((error) => {
+                    console.error("Error setting persistence:", error);
+                });
+
+            let userProgress = {}; // To store video completion and quiz scores
+
+            // Updated trainingContentOrder to remove quizzes
+            const trainingContentOrder = [
+                "intro",
+                "password",
+                "mfa",
+                "summary",
+                "completion" // The final completion accordion for the overall training
+            ];
+
+            const allContentModules = {
+                intro: { type: "video", title: "Module 0: Cybersecurity Essentials", description: "An overview of key cybersecurity principles and why this training matters.", videoSrc: "intro.mp4", prevModule: null },
+                password: { type: "video", title: "Module 1: Strong Passwords", description: "Use long, complex, and unique passwords. Avoid reusing the same password. Consider using a password manager.", videoSrc: "password.mp4", prevModule: "intro" },
+                mfa: { type: "video", title: "Module 2: Multi-Factor Authentication", description: "MFA adds an extra layer of security. Even if your password is stolen, the second factor keeps you protected.", videoSrc: "your-mfa-video.mp4", prevModule: "password" }, // Changed prevModule to 'password'
+                summary: { type: "video", title: "Module 3: Summary", description: "A recap of all the key takeaways from this training package.", videoSrc: "summary.mp4", prevModule: "mfa" }, // Changed prevModule to 'mfa'
+                // Quizzes are now separate and not part of the sequential training modules directly
+                passwordQuiz: { type: "quiz", title: "Quiz 1: Password Quiz", description: "Test your knowledge on creating strong passwords.", prevModule: "password" }, // Prerequisite is the password video
+                mfaQuiz: { type: "quiz", title: "Quiz 2: MFA Quiz", description: "Test your knowledge on Multi-Factor Authentication.", prevModule: "mfa" }, // Prerequisite is the MFA video
+                completion: { type: "completion", title: "Training Completed!", description: "You have successfully completed the Cybersecurity Awareness Training!", prevModule: "summary"}
+            };
+
+            const quizData = {
+                passwordQuiz: [
+                    { question: "What is the main purpose of a password?", options: ["To speed up Browse", "To prove your identity and restrict access", "To back up data", "To store photos"], answer: "To prove your identity and restrict access" },
+                    { question: "Which of the following is considered a strong password?", options: ["password123", "iloveyou", "Zebra$R0cks2024", "mynameisjohn"], answer: "Zebra$R0cks2024" },
+                    { question: "Why is it not advisable to reuse passwords on different accounts?", options: ["It slows down your phone", "It makes updates harder", "One breach can affect multiple accounts", "It helps websites load faster"], answer: "One breach can affect multiple accounts" },
+                    { question: "What is NOT recommended when creating a password?", options: ["Use at least 12 characters", "Include your pet’s name and birthday", "Add numbers and symbols", "Avoid common phrases"], answer: "Include your pet’s name and birthday" },
+                    { question: "True or False: It’s okay to write your password on a sticky note near your computer.", options: ["True", "False"], answer: "False" },
+                ],
+                mfaQuiz: [
+                    { question: "Which of the following options best defines Multi-Factor Authentication (MFA)?", options: ["Logging in with just a longer password", "Using multiple passwords for one account", "Verifying identity using two or more different types of security factors", "Logging in from two devices at once"], answer: "Verifying identity using two or more different types of security factors" },
+                    { question: "You can set up MFA on most common services like Gmail, Facebook, and student portals.", options: ["True", "False"], answer: "True" },
+                    { question: "Why is MFA effective against hackers?", options: ["It blocks access from all devices", "It deletes your password if someone tries to log in", "It requires more than just a password to gain access", "It hides your account from public view"], answer: "It requires more than just a password to gain access" },
+                    { question: "Which of the following is NOT a valid MFA factor?", options: ["Something you know (e.g., password)", "Something you have (e.g., authentication token)", "Something you like", "Something you are (e.g., fingerprint)"], answer: "Something you like" },
+                    { question: "True or False: Using MFA means you no longer need to create strong passwords.", options: ["True", "False"], answer: "False" },
+                ],
+            };
+
+            function saveUserProgress() {
+                if (auth.currentUser) {
+                    localStorage.setItem(`userProgress_${auth.currentUser.uid}`, JSON.stringify(userProgress));
+                }
+            }
+
+            function loadUserProgress() {
+                if (auth.currentUser) {
+                    const savedProgress = localStorage.getItem(`userProgress_${auth.currentUser.uid}`);
+                    userProgress = savedProgress ? JSON.parse(savedProgress) : {};
+                } else {
+                    userProgress = {}; // Clear progress if no user
+                }
+            }
+
+            function isModuleCompleted(moduleKey) {
+                const module = allContentModules[moduleKey];
+                if (!module) return false;
+
+                if (module.type === "video") {
+                    return userProgress[moduleKey] && userProgress[moduleKey].watched === true;
+                } else if (module.type === "quiz") {
+                    // Quiz is completed if score exists and is >= 70
+                    return userProgress[moduleKey] && userProgress[moduleKey].score !== undefined && userProgress[moduleKey].score >= 70;
+                } else if (module.type === "completion") {
+                    // For the main training completion, check if all training video modules are completed
+                    const requiredTrainingModules = ["intro", "password", "mfa", "summary"];
+                    return requiredTrainingModules.every(key => isModuleCompleted(key));
+                } else if (module.type === "quiz_completion") {
+                    // For quiz section completion, check if all quizzes are passed
+                    const requiredQuizzes = ["passwordQuiz", "mfaQuiz"];
+                    return requiredQuizzes.every(key => isModuleCompleted(key));
+                }
+                return false;
+            }
+
+            function isModuleLocked(moduleKey) {
+                const module = allContentModules[moduleKey];
+                if (!module || !module.prevModule) {
+                    return false; // First module or no prerequisites
+                }
+
+                // Check if the previous module (video or quiz) is completed
+                return !isModuleCompleted(module.prevModule);
+            }
+
+            function stopAllVideos() {
+                document.querySelectorAll("video").forEach((v) => {
+                    v.pause();
+                    v.currentTime = 0;
+                });
+            }
+
+            function openAccordion(headerElement) {
+                const content = headerElement.nextElementSibling;
+                content.classList.add('open');
+                content.style.maxHeight = content.scrollHeight + "px";
+                headerElement.setAttribute('aria-expanded', 'true');
+                headerElement.querySelector('svg:last-child')?.classList.add('rotate-180');
+            }
+
+            function closeAccordion(headerElement) {
+                const content = headerElement.nextElementSibling;
+                content.classList.remove('open');
+                content.style.maxHeight = '0';
+                headerElement.setAttribute('aria-expanded', 'false');
+                headerElement.querySelector('svg:last-child')?.classList.remove('rotate-180');
+            }
+
+            function toggleAccordion(headerElement) {
+                const content = headerElement.nextElementSibling;
+                if (content.classList.contains('open')) {
+                    closeAccordion(headerElement);
+                } else {
+                    // Close all other open accordions
+                    document.querySelectorAll('.accordion-content.open').forEach(openContent => {
+                        closeAccordion(openContent.previousElementSibling);
+                    });
+                    openAccordion(headerElement);
+                }
+            }
+
+            function renderTrainingModules() {
+                const container = document.getElementById("training-modules-container");
+                container.innerHTML = ""; // Clear existing content
+                const userName = auth.currentUser ? auth.currentUser.displayName : "User"; // Get current user's display name
+
+                trainingContentOrder.forEach(key => {
+                    const module = allContentModules[key];
+                    const isCompleted = isModuleCompleted(key);
+                    const isLocked = isModuleLocked(key);
+
+                    // Skip quiz modules in the training view
+                    if (module.type === "quiz") return;
+
+                    const accordionBlock = document.createElement("div");
+                    accordionBlock.className = "border border-gray-200 rounded-lg overflow-hidden shadow-sm " + (isLocked ? "opacity-60" : "");
+                    
+                    const header = document.createElement("div");
+                    header.className = "accordion-header flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors duration-200";
+                    header.setAttribute('role', 'button');
+                    header.setAttribute('aria-expanded', 'false');
+                    header.setAttribute('aria-controls', `${key}-content`);
+                    header.dataset.moduleKey = key; // Store the module key for event listener
+
+                    const titleContainer = document.createElement("div");
+                    titleContainer.className = "flex items-center gap-3";
+
+                    const checkmarkSvg = `
+                        <svg class="w-6 h-6 ${isCompleted ? 'text-green-500' : 'text-gray-300'}" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                    `;
+                    titleContainer.innerHTML += checkmarkSvg;
+
+                    const title = document.createElement("h3");
+                    title.className = "text-xl font-semibold text-gray-800";
+                    title.textContent = module.title;
+                    titleContainer.appendChild(title);
+                    header.appendChild(titleContainer);
+
+                    const arrowSvg = `
+                        <svg class="w-6 h-6 text-gray-600 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    `;
+                    header.innerHTML += arrowSvg; // Append arrow to header
+
+                    const content = document.createElement("div");
+                    content.id = `${key}-content`;
+                    content.className = "accordion-content bg-white p-4 sm:p-6";
+                    content.setAttribute('aria-labelledby', `${key}-header`);
+
+                    if (module.type === "video") {
+                        content.innerHTML = `
+                            <p class="mb-4 text-gray-700">${module.description}</p>
+                            <div class="aspect-video w-full rounded-lg overflow-hidden shadow-xl mb-4">
+                                <video controls class="w-full h-full object-cover" data-module="${key}">
+                                    <source src="${module.videoSrc}" type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                            <button class="mark-watched-btn bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-md font-semibold transition duration-300 ease-in-out transform hover:-translate-y-0.5 w-full ${isCompleted ? 'opacity-50 cursor-not-allowed' : ''}" data-module="${key}" ${isCompleted ? 'disabled' : ''}>
+                                ${isCompleted ? '✅ Watched' : 'Mark as Watched'}
+                            </button>
+                        `;
+                    } else if (module.type === "completion") {
+                        content.innerHTML = `
+                            <div class="text-center py-8">
+                                <p class="text-2xl font-bold text-green-700 mb-4">🎉 Fantastic work, ${userName}! 🎉</p>
+                                <p class="text-lg text-gray-700 mb-4">You have successfully completed all video modules of the Cybersecurity Awareness Training package.</p>
+                                <p class="text-lg text-gray-700">You are now better equipped to identify and protect yourself from cyber threats.</p>
+                                <p class="text-lg text-gray-700 mt-4">Feel free to proceed to the quizzes or check your report at any time.</p>
+                                <img src="badge.png" alt="Completion Badge" class="mx-auto mt-6 w-32 h-32 object-contain">
+                            </div>
+                        `;
+                    }
+
+                    if (isLocked) {
+                        header.classList.add("cursor-not-allowed");
+                        header.classList.remove("hover:bg-gray-100");
+                        header.style.pointerEvents = "none"; // Disable clicks on locked headers
+                        const lockIcon = `<svg class="w-5 h-5 ml-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>`;
+                        titleContainer.innerHTML += lockIcon;
+                        accordionBlock.classList.add("filter", "grayscale"); // Visual lock
+                    } else {
+                            header.addEventListener("click", () => {
+                                toggleAccordion(header);
+                                stopAllVideos(); // Stop all videos when an accordion is toggled
+                                if (module.type === "video") {
+                                    const video = content.querySelector('video');
+                                    if (video && content.classList.contains('open')) {
+                                        video.play();
+                                    }
+                                }
+                            });
+                    }
+
+                    accordionBlock.appendChild(header);
+                    accordionBlock.appendChild(content);
+                    container.appendChild(accordionBlock);
+                });
+
+                // Add event listeners for "Mark as Watched" buttons
+                document.querySelectorAll(".mark-watched-btn").forEach((button) => {
+                    button.addEventListener("click", (e) => {
+                        const moduleKey = e.target.dataset.module;
+                        if (!userProgress[moduleKey]) {
+                            userProgress[moduleKey] = {};
+                        }
+                        userProgress[moduleKey].watched = true;
+                        saveUserProgress();
+                        renderTrainingModules(); // Re-render to update checkmarks and unlock next modules
+                        renderQuizModules(); // Re-render quizzes tab to update lock status
+                        updateReportContent();
+                    });
+                });
+            }
+
+            function renderQuizModules() {
+                const container = document.getElementById("quiz-modules-container");
+                container.innerHTML = ""; // Clear existing content
+                quizForm.classList.add("hidden"); // Hide quiz form when rendering modules
+                quizResult.classList.add("hidden"); // Hide quiz result
+                const userName = auth.currentUser ? auth.currentUser.displayName : "User"; // Get current user's display name
+
+
+                // Define the order of quizzes and a final completion accordion for the quiz section
+                const quizOrder = ["passwordQuiz", "mfaQuiz", "quiz_completion"];
+
+                // Add a new module type for quiz completion if it doesn't exist
+                if (!allContentModules.quiz_completion) {
+                    allContentModules.quiz_completion = {
+                        type: "quiz_completion",
+                        title: "Quiz Completion!",
+                        description: "Congratulations! You've passed all the quizzes!",
+                        prevModule: "mfaQuiz" // Requires MFA quiz to be completed
+                    };
+                }
+
+
+                quizOrder.forEach(quizKey => {
+                    const module = allContentModules[quizKey];
+                    const isCompleted = isModuleCompleted(quizKey);
+                    const isLocked = isModuleLocked(quizKey);
+
+                    const accordionBlock = document.createElement("div");
+                    accordionBlock.className = "border border-gray-200 rounded-lg overflow-hidden shadow-sm " + (isLocked ? "opacity-60" : "");
+
+                    const header = document.createElement("div");
+                    header.className = "accordion-header flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors duration-200";
+                    header.setAttribute('role', 'button');
+                    header.setAttribute('aria-expanded', 'false');
+                    header.setAttribute('aria-controls', `${quizKey}-quiz-content`);
+                    
+                    const titleContainer = document.createElement("div");
+                    titleContainer.className = "flex items-center gap-3";
+
+                    const checkmarkSvg = `
+                        <svg class="w-6 h-6 ${isCompleted ? 'text-green-500' : 'text-gray-300'}" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                    `;
+                    titleContainer.innerHTML += checkmarkSvg;
+
+                    const title = document.createElement("h3");
+                    title.className = "text-xl font-semibold text-gray-800";
+                    title.textContent = module.title;
+                    titleContainer.appendChild(title);
+                    header.appendChild(titleContainer);
+
+                    const arrowSvg = `
+                        <svg class="w-6 h-6 text-gray-600 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    `;
+                    header.innerHTML += arrowSvg;
+
+                    const content = document.createElement("div");
+                    content.id = `${quizKey}-quiz-content`;
+                    content.className = "accordion-content bg-white p-4 sm:p-6";
+                    content.setAttribute('aria-labelledby', `${quizKey}-quiz-header`);
+
+                    if (isLocked) {
+                        const lockMessage = document.createElement("p");
+                        lockMessage.className = "text-red-500 mb-4";
+                        lockMessage.textContent = "Complete previous training modules and quizzes to unlock this section.";
+                        content.appendChild(lockMessage);
+                        header.classList.add("cursor-not-allowed");
+                        header.classList.remove("hover:bg-gray-100");
+                        header.style.pointerEvents = "none";
+                        const lockIcon = `<svg class="w-5 h-5 ml-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>`;
+                        titleContainer.innerHTML += lockIcon;
+                        accordionBlock.classList.add("filter", "grayscale");
+                    } else {
+                            header.addEventListener("click", () => {
+                                toggleAccordion(header);
+                                quizForm.classList.add("hidden"); // Hide quiz form when closing accordions
+                                quizResult.classList.add("hidden");
+                            });
+                    }
+                    
+                    if (module.type === "quiz") {
+                        const quizDescription = document.createElement("p");
+                        quizDescription.className = "mb-5 text-gray-700";
+                        quizDescription.textContent = module.description;
+                        content.appendChild(quizDescription);
+
+                        const startQuizButton = document.createElement("button");
+                        startQuizButton.className = "start-quiz-btn bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md font-semibold text-lg transition duration-300 ease-in-out transform hover:-translate-y-1";
+                        const quizScore = userProgress[quizKey] ? userProgress[quizKey].score : null;
+                        startQuizButton.textContent = isCompleted ? `Retake Quiz (Last Score: ${quizScore.toFixed(0)}%)` : "Start Quiz";
+                        startQuizButton.dataset.quizTopic = quizKey;
+                        startQuizButton.disabled = isLocked;
+                        if (isLocked) {
+                            startQuizButton.classList.add("opacity-50", "cursor-not-allowed");
+                        }
+                        startQuizButton.addEventListener("click", () => {
+                            loadQuiz(quizKey);
+                            // Close all quiz accordions and open the quiz form
+                            document.querySelectorAll('.accordion-content.open').forEach(openContent => {
+                                closeAccordion(openContent.previousElementSibling);
+                            });
+                            quizForm.classList.remove("hidden");
+                        });
+                        content.appendChild(startQuizButton);
+
+                        const quizFeedbackDiv = document.createElement("div");
+                        quizFeedbackDiv.id = `${quizKey}-quiz-feedback`;
+                        quizFeedbackDiv.className = `mt-4 p-3 rounded-md text-center text-sm font-medium ${quizScore !== null ? (quizScore >= 70 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800') : 'hidden'}`;
+                        if (quizScore !== null) {
+                            quizFeedbackDiv.textContent = `Your last score: ${quizScore.toFixed(0)}% ${quizScore >= 70 ? 'Passed' : 'Failed'}`;
+                        }
+                        content.appendChild(quizFeedbackDiv);
+                    } else if (module.type === "quiz_completion") {
+                        content.innerHTML = `
+                            <div class="text-center py-8">
+                                <p class="text-2xl font-bold text-green-700 mb-4">🥳 All Quizzes Completed, ${userName}! 🥳</p>
+                                <p class="text-lg text-gray-700 mb-4">You have successfully passed all the quizzes in the Cybersecurity Awareness Training.</p>
+                                <p class="text-lg text-gray-700">Your knowledge is strong! Keep up the great work.</p>
+                                <img src="badge.png" alt="Quiz Master Badge" class="mx-auto mt-6 w-32 h-32 object-contain">
+                            </div>
+                        `;
+                    }
+
+                    accordionBlock.appendChild(header);
+                    accordionBlock.appendChild(content);
+                    container.appendChild(accordionBlock);
+                });
+            }
+
+
+            const quizQuestionsDiv = document.getElementById("quiz-questions");
+            const quizForm = document.getElementById("quiz-form");
+            const quizResult = document.getElementById("quiz-result");
+            let currentQuizTopic = null; // To keep track of which quiz is being taken
+
+            function loadQuiz(topic) {
+                currentQuizTopic = topic;
+                quizQuestionsDiv.innerHTML = "";
+                quizResult.innerText = "";
+                quizResult.classList.add("hidden");
+                quizForm.reset();
+
+                const questions = quizData[topic];
+                questions.forEach((q, index) => {
+                    const qBlock = document.createElement("div");
+                    qBlock.className = "mb-6 p-4 border border-blue-200 rounded-lg bg-blue-50";
+
+                    const questionText = document.createElement("div"); // Changed to div for question text
+                    questionText.className = "block font-bold mb-3 text-gray-800 text-lg";
+                    questionText.innerText = `${index + 1}. ${q.question}`;
+                    qBlock.appendChild(questionText);
+
+                    const optionsContainer = document.createElement("div");
+                    optionsContainer.className = "space-y-2"; // Add spacing between options
+
+                    q.options.forEach((optionText, optionIndex) => {
+                        const optionLabel = document.createElement("label"); // The label will act as the clickable option block
+                        optionLabel.className = "mcq-option";
+                        optionLabel.htmlFor = `q${index}-option${optionIndex}`; // Link label to radio button
+
+                        const radioInput = document.createElement("input");
+                        radioInput.type = "radio";
+                        radioInput.name = `q${index}`; // Group radio buttons by question
+                        radioInput.value = optionText;
+                        radioInput.id = `q${index}-option${optionIndex}`; // Unique ID for each radio
+                        
+                        // Add event listener to highlight selected option
+                        radioInput.addEventListener('change', function() {
+                            // Remove 'selected' class from all other options for this question
+                            document.querySelectorAll(`label[for^="q${index}-option"]`).forEach(el => {
+                                el.classList.remove('selected');
+                            });
+                            // Add 'selected' class to the current label if its radio is checked
+                            if (this.checked) {
+                                optionLabel.classList.add('selected');
+                            }
+                        });
+
+                        const optionSpan = document.createElement("span"); // Use span for the text inside the label
+                        optionSpan.className = "mcq-option-label";
+                        optionSpan.innerText = optionText;
+
+                        optionLabel.appendChild(radioInput);
+                        optionLabel.appendChild(optionSpan);
+                        optionsContainer.appendChild(optionLabel);
+                    });
+
+                    qBlock.appendChild(optionsContainer);
+                    quizQuestionsDiv.appendChild(qBlock);
+                });
+
+                quizForm.classList.remove("hidden");
+            }
+
+            quizForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const selectedTopic = currentQuizTopic;
+                const questions = quizData[selectedTopic];
+                let score = 0;
+
+                let allAnswered = true;
+                for (let i = 0; i < questions.length; i++) {
+                    // Get the selected radio button for the current question
+                    const selectedOption = quizForm.querySelector(`input[name="q${i}"]:checked`);
+                    
+                    if (!selectedOption) {
+                        allAnswered = false;
+                        break;
+                    }
+                    if (selectedOption.value === questions[i].answer) score++;
+                }
+
+                if (!allAnswered) {
+                    alert("Please answer all questions before submitting the quiz.");
+                    return;
+                }
+
+                const percentage = (score / questions.length) * 100;
+
+                if (!userProgress[selectedTopic]) {
+                    userProgress[selectedTopic] = {};
+                }
+                userProgress[selectedTopic].score = percentage;
+                saveUserProgress();
+
+                quizResult.classList.remove("hidden");
+                quizResult.className = "mt-6 p-4 rounded-lg text-center text-lg font-semibold flex flex-col items-center"; // Added flex styles for button alignment
+
+                // Clear previous buttons if any
+                quizResult.querySelectorAll(".quiz-action-btn").forEach(btn => btn.remove());
+                quizResult.querySelector("br")?.remove(); // Remove existing break tag if any
+
+                if (percentage >= 70) {
+                    quizResult.innerText = `✅ Great job! You scored ${percentage.toFixed(0)}%.`;
+                    quizResult.classList.add("bg-green-100", "text-green-800");
+                    quizResult.classList.remove("bg-red-100", "text-red-800"); // Ensure red is removed if retrying and passing
+
+                    const backToQuizzesBtn = document.createElement("button");
+                    backToQuizzesBtn.id = "quiz-continue-btn";
+                    backToQuizzesBtn.className = "quiz-action-btn mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md font-semibold text-lg transition duration-300 ease-in-out transform hover:-translate-y-1";
+                    backToQuizzesBtn.textContent = "Back to Quizzes";
+                    backToQuizzesBtn.addEventListener("click", () => {
+                        quizForm.classList.add("hidden");
+                        document.querySelector('.tab[data-target="quiz"]').click();
+                        renderTrainingModules();
+                        renderQuizModules();
+                        updateReportContent();
+                    });
+                    quizResult.appendChild(backToQuizzesBtn);
+
+                } else {
+                    quizResult.innerText = `❌ You scored ${percentage.toFixed(0)}%. Please review the training and try again.`;
+                    quizResult.classList.add("bg-red-100", "text-red-800");
+                    quizResult.classList.remove("bg-green-100", "text-green-800"); // Ensure green is removed
+
+                    const buttonContainer = document.createElement("div");
+                    buttonContainer.className = "flex justify-center gap-4 mt-4"; // Flex container for buttons
+
+                    const retryBtn = document.createElement("button");
+                    retryBtn.className = "quiz-action-btn bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md font-semibold text-lg transition duration-300 ease-in-out transform hover:-translate-y-1";
+                    retryBtn.textContent = "Retry Quiz";
+                    retryBtn.addEventListener("click", () => {
+                        loadQuiz(selectedTopic); // Reload the same quiz
+                    });
+
+                    const backToTrainingBtn = document.createElement("button");
+                    backToTrainingBtn.className = "quiz-action-btn bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-md font-semibold text-lg transition duration-300 ease-in-out transform hover:-translate-y-1";
+                    backToTrainingBtn.textContent = "Go back to Training";
+                    backToTrainingBtn.addEventListener("click", () => {
+                        quizForm.classList.add("hidden");
+                        document.querySelector('.tab[data-target="training"]').click(); // Activate training tab
+                        renderTrainingModules(); // Re-render training to update status and unlock next if needed
+
+                        // Open the specific video accordion based on the failed quiz
+                        let targetVideoModuleKey;
+                        if (selectedTopic === "passwordQuiz") {
+                            targetVideoModuleKey = "password";
+                        } else if (selectedTopic === "mfaQuiz") {
+                            targetVideoModuleKey = "mfa";
+                        }
+
+                        if (targetVideoModuleKey) {
+                            const headerElement = document.querySelector(`#training-modules-container [data-module-key="${targetVideoModuleKey}"] .accordion-header`);
+                            if (headerElement) {
+                                // Close all other accordions first
+                                document.querySelectorAll('.accordion-content.open').forEach(openContent => {
+                                    closeAccordion(openContent.previousElementSibling);
+                                });
+                                openAccordion(headerElement);
+                                // Scroll to the video module
+                                setTimeout(() => { // Small delay to allow accordion to open before scrolling
+                                    headerElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                    const videoElement = headerElement.nextElementSibling.querySelector('video');
+                                    if (videoElement) {
+                                        videoElement.play();
+                                    }
+                                }, 350); // Match accordion transition time
+                            }
+                        }
+                        updateReportContent();
+                    });
+
+                    buttonContainer.appendChild(retryBtn);
+                    buttonContainer.appendChild(backToTrainingBtn);
+                    quizResult.appendChild(buttonContainer);
+                }
+            });
+
+
+            // Feedback form submission
+            document.getElementById("feedback-form").addEventListener("submit", (e) => {
+                e.preventDefault();
+                const module = document.getElementById("feedback-module").value;
+                const rating = document.getElementById("feedback-rating").value;
+                const comments = document.getElementById("feedback-comments").value.trim();
+                const feedbackMsg = document.getElementById("feedback-msg");
+
+                if (!module || !rating) {
+                    feedbackMsg.innerText = "Please select a module and a rating.";
+                    feedbackMsg.classList.remove("hidden");
+                    feedbackMsg.classList.remove("bg-green-100", "text-green-800");
+                    feedbackMsg.classList.add("bg-red-100", "text-red-800");
+                    return;
+                }
+
+                // In a real application, you would send this data to a database (e.g., Firebase Firestore)
+                console.log("Feedback Submitted:", { module, rating, comments });
+
+                feedbackMsg.innerText = "Thank you for your feedback! Your input helps us improve.";
+                feedbackMsg.classList.remove("hidden");
+                feedbackMsg.classList.remove("bg-red-100", "text-red-800");
+                feedbackMsg.classList.add("bg-green-100", "text-green-800");
+
+                document.getElementById("feedback-form").reset(); // Clear form after submission
+            });
+
+            function updateReportContent() {
+                const reportName = document.getElementById("report-name");
+                const reportEmail = document.getElementById("report-id");
+                const trainingReportDetails = document.getElementById("training-report-details");
+                const quizReportDetails = document.getElementById("quiz-report-details");
+
+                reportName.innerText = auth.currentUser.displayName || "N/A";
+                reportEmail.innerText = auth.currentUser.email || "N/A";
+
+                let trainingReportHtml = "";
+                // Filter to only include video modules for the training progress section
+                trainingContentOrder.forEach(key => {
+                    const module = allContentModules[key];
+                    if (module.type === "video") { // Only process video modules here
+                        const isCompleted = isModuleCompleted(key);
+                        let statusText = isCompleted ? '✅ Completed' : '⏳ Pending';
+                        let statusClass = isCompleted ? 'text-green-600' : 'text-gray-500';
+                        
+                        trainingReportHtml += `
+                            <p class="flex justify-between items-center">
+                                <span class="font-bold">${module.title}</span>
+                                <span class="${statusClass}">
+                                    ${statusText}
+                                </span>
+                            </p>
+                        `;
+                    }
+                });
+                trainingReportDetails.innerHTML = trainingReportHtml;
+
+
+                let quizReportHtml = "";
+                const quizKeysForReport = ["passwordQuiz", "mfaQuiz"]; // Explicitly list quizzes for report
+                quizKeysForReport.forEach(quizKey => {
+                    const quizTitle = allContentModules[quizKey].title; // Get title from allContentModules
+                    const quizScore = userProgress[quizKey] ? userProgress[quizKey].score : null;
+
+                    if (quizScore !== null) {
+                        quizReportHtml += `<p class="flex justify-between items-center"><span class="font-bold">${quizTitle}</span> <span class="${quizScore >= 70 ? 'text-green-600' : 'text-red-600'}">${quizScore.toFixed(0)}% ${quizScore >= 70 ? '✅ Passed' : '❌ Failed'}</span></p>`;
+                    } else {
+                        quizReportHtml += `<p class="flex justify-between items-center"><span class="font-bold">${quizTitle}</span> <span class="text-gray-500">Not attempted yet</span></p>`;
+                    }
+                });
+                quizReportDetails.innerHTML = quizReportHtml;
+            }
+
 
             // Login
             document.getElementById("login-btn").addEventListener("click", () => {
@@ -290,11 +983,36 @@
                         document.getElementById("user-email").innerText = user.email;
                         document.getElementById("auth-section").classList.add("hidden");
                         document.getElementById("main-app").classList.remove("hidden");
+                        loadUserProgress(); // Load progress for the logged-in user
+                        renderTrainingModules(); // Render modules based on loaded progress
+                        renderQuizModules(); // Render quizzes based on loaded progress
+                        document.querySelector('.tab[data-target="training"]').click(); // Set the active tab to "Training" by default on login
                     })
                     .catch((error) => {
                         document.getElementById("auth-error").innerText = error.message;
                     });
             });
+
+            // Logout functionality
+            const logoutBtn = document.getElementById("logout-btn");
+            if (logoutBtn) {
+                logoutBtn.addEventListener("click", () => {
+                    auth.signOut()
+                        .then(() => {
+                            document.getElementById("user-name").innerText = "";
+                            document.getElementById("user-email").innerText = "";
+                            document.getElementById("main-app").classList.add("hidden");
+                            document.getElementById("auth-section").classList.remove("hidden");
+                            userProgress = {}; // Clear local progress on logout
+                            localStorage.removeItem(`userProgress_${auth.currentUser?.uid}`); // Clear specific user's progress
+                            stopAllVideos(); // Stop any playing videos
+                        })
+                        .catch((error) => {
+                            console.error("Logout Error:", error.message);
+                        });
+                });
+            }
+
 
             // Switch to Sign Up
             document.getElementById("show-signup").addEventListener("click", () => {
@@ -334,24 +1052,17 @@
                         document.getElementById("user-email").innerText = user.email;
                         document.getElementById("signup-form").classList.add("hidden");
                         document.getElementById("main-app").classList.remove("hidden");
+                        loadUserProgress(); // Load progress (will be empty for new user)
+                        renderTrainingModules(); // Render modules for new user
+                        renderQuizModules(); // Render quizzes for new user
+                        document.querySelector('.tab[data-target="training"]').click(); // Set the active tab to "Training" by default on signup
                     })
                     .catch((error) => {
                         document.getElementById("signup-error").innerText = error.message;
                     });
             });
 
-            let quizCompleted = false;
-            let quizScore = 0;
-            let passwordScore = null;
-            let mfaScore = null;
-
-            function stopAllVideos() {
-                document.querySelectorAll("video").forEach((v) => {
-                    v.pause();
-                    v.currentTime = 0;
-                });
-            }
-
+            // Tab switching logic
             document.querySelectorAll(".tab").forEach((btn) => {
                 btn.addEventListener("click", () => {
                     const target = btn.dataset.target;
@@ -360,409 +1071,45 @@
                     document.querySelectorAll("section").forEach((sec) => sec.classList.add("hidden"));
                     document.getElementById(target).classList.remove("hidden");
 
+                    // Update active tab styling
+                    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active-tab"));
+                    btn.classList.add("active-tab");
+
                     if (target === "quiz") {
-                        quizTopicSelect.parentElement.style.display = "block"; // Ensure dropdown is shown
+                        renderQuizModules(); // Ensure quiz modules are up-to-date with lock status
+                    } else {
+                        // Hide quiz form if not on quiz tab
                         quizForm.classList.add("hidden");
-                        quizQuestionsDiv.innerHTML = "";
-                        quizResult.innerText = "";
-                        startQuizBtn.style.display = "inline-block";
-                        quizTopicSelect.value = "";
+                        quizResult.classList.add("hidden");
                     }
 
                     if (target === "report") {
-                        const report = document.getElementById("report-content");
+                        updateReportContent();
+                    }
 
-                        // Set name and ID
-                        document.getElementById("report-name").innerText = auth.currentUser.displayName || "N/A";
-                        document.getElementById("report-id").innerText = auth.currentUser.email || "N/A";
-
-                        let html = "";
-
-                        if (passwordScore !== null) {
-                            html += `<p><strong>Password Quiz Completed:</strong> Yes</p><p><strong>Score:</strong> ${passwordScore}%</p><hr class="my-2" />`;
-                        } else {
-                            html += `<p><strong>Password Quiz Completed:</strong> No</p><hr class="my-2" />`;
-                        }
-
-                        if (mfaScore !== null) {
-                            html += `<p><strong>MFA Quiz Completed:</strong> Yes</p><p><strong>Score:</strong> ${mfaScore}%</p>`;
-                        } else {
-                            html += `<p><strong>MFA Quiz Completed:</strong> No</p>`;
-                        }
-
-                        // Append the quiz report after Name and ID section
-                        document.getElementById("report-content").innerHTML += html;
+                    if (target === "feedback") {
+                        document.getElementById("feedback-msg").classList.add("hidden"); // Hide feedback message on tab switch
+                        document.getElementById("feedback-form").reset(); // Clear form
                     }
                 });
             });
 
-            const trainingNavButtons = document.getElementById("training-nav-buttons");
 
-            const flow = {
-                intro: { nextBtnText: "Next: Strong Passwords", nextTarget: "password" },
-                password: { nextBtnText: "Take Password Quiz", nextTarget: "quiz-password" },
-                "quiz-password": { nextBtnText: "Submit and Continue Watching MFA", nextTarget: "mfa" },
-                mfa: { nextBtnText: "Take MFA Quiz", nextTarget: "quiz-mfa" },
-                "quiz-mfa": { nextBtnText: "Submit and Continue Watching Summary", nextTarget: "summary" },
-                summary: {
-                    nextBtnTextSurvey: "Take Survey",
-                    nextBtnTextFinish: "Finish",
-                    nextTargetSurvey: "feedback",
-                    nextTargetFinish: "finish"
+            // Initial setup for the training section if user is already logged in (e.g., on page refresh)
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    document.getElementById("user-name").innerText = user.displayName || "User";
+                    document.getElementById("user-email").innerText = user.email;
+                    document.getElementById("auth-section").classList.add("hidden");
+                    document.getElementById("main-app").classList.remove("hidden");
+                    loadUserProgress(); // Load progress for the logged-in user
+                    renderTrainingModules(); // Render modules based on loaded progress
+                    renderQuizModules(); // Render quizzes based on loaded progress
+                    document.querySelector('.tab[data-target="training"]').click(); // Ensure training tab is active on load if logged in
+                } else {
+                    document.getElementById("auth-section").classList.remove("hidden");
+                    document.getElementById("main-app").classList.add("hidden");
                 }
-            };
-
-            function clearNavButtons() {
-                trainingNavButtons.innerHTML = "";
-            }
-
-            function showSection(sectionId) {
-                stopAllVideos();
-                document.querySelectorAll("section").forEach((sec) => sec.classList.add("hidden"));
-                document.getElementById(sectionId).classList.remove("hidden");
-            }
-
-            function hideTraining() {
-                document.getElementById("training").classList.add("hidden");
-            }
-
-            function showTrainingVideo(videoKey) {
-                document.getElementById("training").classList.remove("hidden");
-
-                const videoDiv = document.getElementById(`${videoKey}-video`);
-                if (videoDiv) {
-                    document.querySelectorAll(".training-video").forEach((div) => div.classList.add("hidden"));
-                    videoDiv.classList.remove("hidden");
-
-                    const vid = videoDiv.querySelector("video");
-                    if (vid) {
-                        vid.currentTime = 0;
-                        vid.play();
-
-                        // IMPORTANT: Reattach the onended logic
-                        vid.onended = () => {
-                            clearNavButtons();
-
-                            if (flow[videoKey]) {
-                                if (videoKey === "summary") {
-                                    const surveyBtn = document.createElement("button");
-                                    surveyBtn.className = "bg-green-500 text-white px-4 py-2 rounded";
-                                    surveyBtn.textContent = flow[videoKey].nextBtnTextSurvey;
-                                    surveyBtn.addEventListener("click", () => {
-                                        showSection("feedback");
-                                    });
-
-                                    const finishBtn = document.createElement("button");
-                                    finishBtn.className = "bg-blue-600 text-white px-4 py-2 rounded";
-                                    finishBtn.textContent = flow[videoKey].nextBtnTextFinish;
-                                    finishBtn.addEventListener("click", () => {
-                                        alert("🎉 Congrats, you've finished the training!");
-                                    });
-
-                                    trainingNavButtons.appendChild(surveyBtn);
-                                    trainingNavButtons.appendChild(finishBtn);
-                                } else {
-                                    const nextBtn = document.createElement("button");
-                                    nextBtn.className = "bg-blue-600 text-white px-4 py-2 rounded";
-                                    nextBtn.textContent = flow[videoKey].nextBtnText;
-
-                                    nextBtn.addEventListener("click", () => {
-                                        clearNavButtons();
-
-                                        if (flow[videoKey].nextTarget.startsWith("quiz")) {
-                                            if (flow[videoKey].nextTarget === "quiz-password") {
-                                                loadQuiz("password", true); // Pass fromTraining = true
-                                            } else if (flow[videoKey].nextTarget === "quiz-mfa") {
-                                                loadQuiz("mfa", true); // Pass fromTraining = true
-                                            }
-                                            showSection("quiz");
-                                            hideTraining();
-                                        } else {
-                                            showTrainingVideo(flow[videoKey].nextTarget);
-                                        }
-                                    });
-
-                                    trainingNavButtons.appendChild(nextBtn);
-                                }
-                            }
-                        };
-                    }
-                }
-            }
-
-            document.querySelectorAll(".training-option").forEach((btn) => {
-                btn.addEventListener("click", () => {
-                    stopAllVideos();
-                    clearNavButtons();
-                    document.querySelectorAll(".training-video").forEach((div) => div.classList.add("hidden"));
-
-                    const selected = btn.dataset.video;
-                    const videoEl = document.getElementById(`${selected}-video`);
-
-                    if (videoEl) {
-                        videoEl.classList.remove("hidden");
-                        const vid = videoEl.querySelector("video");
-                        if (vid) {
-                            vid.currentTime = 0;
-                            vid.play();
-
-                            // Remove old listener
-                            vid.onended = null;
-
-                            vid.onended = () => {
-                                clearNavButtons();
-
-                                if (flow[selected]) {
-                                    if (selected === "summary") {
-                                        const surveyBtn = document.createElement("button");
-                                        surveyBtn.className = "bg-green-500 text-white px-4 py-2 rounded";
-                                        surveyBtn.textContent = flow[selected].nextBtnTextSurvey;
-                                        surveyBtn.addEventListener("click", () => {
-                                            showSection("feedback");
-                                        });
-
-                                        const finishBtn = document.createElement("button");
-                                        finishBtn.className = "bg-blue-600 text-white px-4 py-2 rounded";
-                                        finishBtn.textContent = flow[selected].nextBtnTextFinish;
-                                        finishBtn.addEventListener("click", () => {
-                                            alert("🎉 Congrats, you've finished the training!");
-                                        });
-
-                                        trainingNavButtons.appendChild(surveyBtn);
-                                        trainingNavButtons.appendChild(finishBtn);
-                                    } else {
-                                        const nextBtn = document.createElement("button");
-                                        nextBtn.className = "bg-blue-600 text-white px-4 py-2 rounded";
-                                        nextBtn.textContent = flow[selected].nextBtnText;
-
-                                        nextBtn.addEventListener("click", () => {
-                                            clearNavButtons();
-
-                                            if (flow[selected].nextTarget.startsWith("quiz")) {
-                                                if (flow[selected].nextTarget === "quiz-password") {
-                                                    loadQuiz("password");
-                                                } else if (flow[selected].nextTarget === "quiz-mfa") {
-                                                    loadQuiz("mfa");
-                                                }
-                                                showSection("quiz");
-                                                hideTraining();
-                                            } else {
-                                                showTrainingVideo(flow[selected].nextTarget);
-                                            }
-                                        });
-
-                                        trainingNavButtons.appendChild(nextBtn);
-                                    }
-                                }
-                            };
-                        }
-                    } else {
-                        alert(`Video section for "${selected}" not found!`);
-                    }
-                });
-            });
-
-            const quizData = {
-                password: [
-                    {
-                        question: "What is the main purpose of a password?",
-                        options: ["To speed up browsing", "To prove your identity and restrict access", "To back up data", "To store photos"],
-                        answer: "To prove your identity and restrict access"
-                    },
-                    {
-                        question: "Which of the following is considered a strong password?",
-                        options: [
-                            "password123",
-                            "iloveyou",
-                            "Zebra$R0cks2024",
-                            "mynameisjohn"
-                        ],
-                        answer: "Zebra$R0cks2024"
-                    },
-                    {
-                        question: "Why is it not advisable to reuse passwords on different accounts?",
-                        options: [
-                            "It slows down your phone",
-                            "It makes updates harder",
-                            "One breach can affect multiple accounts",
-                            "It helps websites load faster"
-                        ],
-                        answer: "One breach can affect multiple accounts"
-                    },
-                    {
-                        question: "What is NOT recommended when creating a password?",
-                        options: ["Use at least 12 characters", "Include your pet’s name and birthday", "Add numbers and symbols", "Avoid common phrases"],
-                        answer: "Include your pet’s name and birthday"
-                    },
-                    {
-                        question: "True or False: It’s okay to write your password on a sticky note near your computer.",
-                        options: ["True", "False"],
-                        answer: "False"
-                    }
-                ],
-                mfa: [
-                    {
-                        question: "What does “Multi-Factor Authentication” (MFA) mean?",
-                        options: [
-                            "Logging in with just a longer password",
-                            "Using multiple passwords for one account",
-                            "Verifying identity using two or more different types of security factors",
-                            "Logging in from two devices at once"
-                        ],
-                        answer: "Verifying identity using two or more different types of security factors"
-                    },
-                    {
-                        question: "You can set up MFA on most common services like Gmail, Facebook, and student portals.",
-                        options: [
-                            "True",
-                            "False",
-                        ],
-                        answer: "True"
-                    },
-                    {
-                        question: "Why is MFA effective against hackers?",
-                        options: ["It blocks access from all devices", "It deletes your password if someone tries to log in", "It requires more than just a password to gain access", "It hides your account from public view"],
-                        answer: "It requires more than just a password to gain access"
-                    },
-                    {
-                        question: "Which of the following is NOT a valid MFA factor?",
-                        options: [
-                            "Something you know (e.g., password)",
-                            "Something you have (e.g., authentication token)",
-                            "Something you like",
-                            "Something you are (e.g., fingerprint)"
-                        ],
-                        answer: "Something you like"
-                    },
-                    {
-                        question: "True or False: Using MFA means you no longer need to create strong passwords.",
-                        options: ["True", "False"],
-                        answer: "False"
-                    }
-                ]
-            };
-
-            const quizTopicSelect = document.getElementById("quiz-topic");
-            const startQuizBtn = document.getElementById("start-quiz-btn");
-            const quizForm = document.getElementById("quiz-form");
-            const quizQuestionsDiv = document.getElementById("quiz-questions");
-            const quizResult = document.getElementById("quiz-result");
-
-            function loadQuiz(topic, fromTraining = false) {
-                quizQuestionsDiv.innerHTML = "";
-                quizResult.innerText = "";
-                quizForm.reset();
-
-                quizTopicSelect.value = topic;
-                startQuizBtn.style.display = "none";
-
-                // Hide dropdown if coming from training
-                quizTopicSelect.parentElement.style.display = fromTraining ? "none" : "block";
-
-                quizData[topic].forEach((q, index) => {
-                    const qBlock = document.createElement("div");
-                    qBlock.className = "mb-4";
-
-                    const label = document.createElement("label");
-                    label.className = "block font-semibold mb-1";
-                    label.innerText = `${index + 1}. ${q.question}`;
-
-                    const select = document.createElement("select");
-                    select.className = "w-full p-2 border rounded";
-                    select.name = `q${index}`;
-
-                    const defaultOption = document.createElement("option");
-                    defaultOption.value = "";
-                    defaultOption.innerText = "-- Select --";
-                    select.appendChild(defaultOption);
-
-                    q.options.forEach((option) => {
-                        const opt = document.createElement("option");
-                        opt.value = option;
-                        opt.innerText = option;
-                        select.appendChild(opt);
-                    });
-
-                    qBlock.appendChild(label);
-                    qBlock.appendChild(select);
-                    quizQuestionsDiv.appendChild(qBlock);
-                });
-
-                quizForm.classList.remove("hidden");
-            }
-
-            startQuizBtn.addEventListener("click", () => {
-                const selectedTopic = quizTopicSelect.value;
-                if (!selectedTopic) {
-                    alert("Please select a quiz topic.");
-                    return;
-                }
-                loadQuiz(selectedTopic);
-                startQuizBtn.style.display = "none";
-            });
-
-            quizTopicSelect.addEventListener("change", () => {
-                quizForm.classList.add("hidden");
-                quizQuestionsDiv.innerHTML = "";
-                quizResult.innerText = "";
-                startQuizBtn.style.display = "inline-block";
-            });
-
-            quizForm.addEventListener("submit", (e) => {
-                e.preventDefault();
-                const selectedTopic = quizTopicSelect.value;
-                const questions = quizData[selectedTopic];
-                let score = 0;
-
-                for (let i = 0; i < questions.length; i++) {
-                    const selected = quizForm[`q${i}`].value;
-                    if (selected === questions[i].answer) score++;
-                }
-
-                const percentage = (score / questions.length) * 100;
-                quizCompleted = true;
-
-                if (selectedTopic === "password") {
-                    passwordScore = percentage;
-                } else if (selectedTopic === "mfa") {
-                    mfaScore = percentage;
-                }
-
-                quizResult.innerText =
-                    percentage >= 70
-                        ? `✅ Great job! You scored ${percentage}%.`
-                        : `❌ You scored ${percentage}%. Please review the training and try again.`;
-
-                // Create Continue button
-                const continueBtn = document.createElement("button");
-                continueBtn.className = "bg-blue-600 text-white px-4 py-2 rounded mt-4 ml-2";
-
-                // Set button text and logic based on quiz topic
-                if (selectedTopic === "password") {
-                    continueBtn.textContent =
-                        percentage >= 70 ? "Continue to MFA Video" : "Review Strong Passwords Video";
-                } else if (selectedTopic === "mfa") {
-                    continueBtn.textContent = percentage >= 70 ? "Continue to Summary Video" : "Review MFA Video";
-                }
-
-                continueBtn.addEventListener("click", () => {
-                    quizForm.classList.add("hidden");
-                    quizTopicSelect.value = "";
-                    quizQuestionsDiv.innerHTML = "";
-                    quizResult.innerText = "";
-                    startQuizBtn.style.display = "inline-block";
-                    showSection("training");
-
-                    // Redirect based on pass/fail
-                    if (selectedTopic === "password") {
-                        showTrainingVideo(percentage >= 70 ? "mfa" : "password");
-                    } else if (selectedTopic === "mfa") {
-                        showTrainingVideo(percentage >= 70 ? "summary" : "mfa");
-                    }
-                });
-
-                quizResult.appendChild(document.createElement("br")); // Add line break
-                quizResult.appendChild(continueBtn);
             });
         </script>
     </body>
