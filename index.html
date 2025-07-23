@@ -8,6 +8,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
         <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-auth-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-firestore-compat.js"></script>
         <style>
             body {
                 font-family: "Inter", sans-serif;
@@ -179,6 +180,19 @@
                     placeholder="Student Email"
                     class="w-full mb-4 p-3 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 transition duration-200"
                 />
+                <div class="mb-4">
+                    <label for="signup-degree" class="block text-gray-700 text-sm font-bold mb-2">Select Your Degree:</label>
+                    <select
+                        id="signup-degree"
+                        class="w-full p-3 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 transition duration-200 text-gray-700 bg-white"
+                    >
+                        <option value="">-- Choose Your Degree --</option>
+                        <option value="Cybersecurity">Cybersecurity</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Business Information Systems">Business Information Systems</option>
+                        <option value="Data Science">Data Science</option>
+                    </select>
+                </div>
                 <input
                     id="signup-password"
                     type="password"
@@ -214,7 +228,7 @@
                 <div class="bg-blue-100 text-blue-800 p-4 rounded-lg shadow-inner text-sm md:text-base text-right">
                     <p id="user-name" class="font-bold">Loading User...</p>
                     <p id="user-email" class="text-blue-700"></p>
-                    <button id="logout-btn" class="mt-2 text-red-500 hover:text-red-700 text-sm font-semibold">Log Out</button>
+                    <p id="user-degree" class="text-blue-700"></p> <button id="logout-btn" class="mt-2 text-red-500 hover:text-red-700 text-sm font-semibold">Log Out</button>
                 </div>
             </header>
 
@@ -281,16 +295,91 @@
                             <option value="completion">Completion</option>
                         </select>
 
-                        <label for="feedback-rating" class="block mb-2 font-semibold text-blue-700">How would you rate this module?</label>
-                        <select id="feedback-rating" name="rating" class="mb-4 p-3 border border-blue-300 w-full rounded-md focus:ring-blue-500 focus:border-blue-500 transition duration-200 text-gray-700 bg-white">
-                            <option value="">-- Rate --</option>
-                            <option value="5">🌟 Excellent</option>
-                            <option value="4">👍 Good</option>
-                            <option value="3">😐 Average</option>
-                            <option value="2">👎 Poor</option>
-                            <option value="1">Worst</option>
-                        </select>
-                        <label for="feedback-comments" class="block mb-2 font-semibold text-blue-700">Any comments?</label>
+                        <div class="mb-4">
+                            <label for="student-id" class="block mb-2 font-semibold text-blue-700">Indicate your Student ID number <span class="text-red-500">*</span></label>
+                            <input
+                                type="text"
+                                id="student-id"
+                                name="studentId"
+                                class="w-full p-3 border border-blue-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition duration-200 text-gray-700 bg-white"
+                                placeholder="e.g., 30000000"
+                                required
+                            />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block mb-2 font-semibold text-blue-700">How likely are you to recommend this training to others? <span class="text-red-500">*</span></label>
+                            <div class="flex flex-col sm:flex-row justify-around gap-2">
+                                <label class="flex items-center space-x-2 cursor-pointer p-2 border rounded-md hover:bg-blue-100">
+                                    <input type="radio" name="recommend-likelihood" value="1" class="form-radio text-blue-600" required>
+                                    <span>1 - Unlikely</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer p-2 border rounded-md hover:bg-blue-100">
+                                    <input type="radio" name="recommend-likelihood" value="2" class="form-radio text-blue-600">
+                                    <span>2 - Neutral</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer p-2 border rounded-md hover:bg-blue-100">
+                                    <input type="radio" name="recommend-likelihood" value="3" class="form-radio text-blue-600">
+                                    <span>3 - Likely</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block mb-2 font-semibold text-blue-700">Rate how difficult it was trying to navigate the training material. <span class="text-red-500">*</span></label>
+                            <div class="flex flex-col sm:flex-row justify-around gap-2">
+                                <label class="flex items-center space-x-2 cursor-pointer p-2 border rounded-md hover:bg-blue-100">
+                                    <input type="radio" name="navigation-difficulty" value="1" class="form-radio text-blue-600" required>
+                                    <span>1 - Difficult</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer p-2 border rounded-md hover:bg-blue-100">
+                                    <input type="radio" name="navigation-difficulty" value="2" class="form-radio text-blue-600">
+                                    <span>2 - Neutral</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer p-2 border rounded-md hover:bg-blue-100">
+                                    <input type="radio" name="navigation-difficulty" value="3" class="form-radio text-blue-600">
+                                    <span>3 - Easy</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block mb-2 font-semibold text-blue-700">Rate how comprehensive the training material is. <span class="text-red-500">*</span></label>
+                            <div class="flex flex-col sm:flex-row justify-around gap-2">
+                                <label class="flex items-center space-x-2 cursor-pointer p-2 border rounded-md hover:bg-blue-100">
+                                    <input type="radio" name="comprehensiveness-rating" value="1" class="form-radio text-blue-600" required>
+                                    <span>1 - Not Comprehensive</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer p-2 border rounded-md hover:bg-blue-100">
+                                    <input type="radio" name="comprehensiveness-rating" value="2" class="form-radio text-blue-600">
+                                    <span>2 - Neutral</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer p-2 border rounded-md hover:bg-blue-100">
+                                    <input type="radio" name="comprehensiveness-rating" value="3" class="form-radio text-blue-600">
+                                    <span>3 - Comprehensive</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block mb-2 font-semibold text-blue-700">Rate how engaging you found the training material. <span class="text-red-500">*</span></label>
+                            <div class="flex flex-col sm:flex-row justify-around gap-2">
+                                <label class="flex items-center space-x-2 cursor-pointer p-2 border rounded-md hover:bg-blue-100">
+                                    <input type="radio" name="engaging-rating" value="1" class="form-radio text-blue-600" required>
+                                    <span>1 - Not engaging</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer p-2 border rounded-md hover:bg-blue-100">
+                                    <input type="radio" name="engaging-rating" value="2" class="form-radio text-blue-600">
+                                    <span>2 - Neutral</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer p-2 border rounded-md hover:bg-blue-100">
+                                    <input type="radio" name="engaging-rating" value="3" class="form-radio text-blue-600">
+                                    <span>3 - Engaging</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <label for="feedback-comments" class="block mb-2 font-semibold text-blue-700">In your opinion, what can be done to improve this training?</label>
                         <textarea
                             id="feedback-comments"
                             name="comments"
@@ -310,9 +399,9 @@
                         My Training Report
                     </h2>
                     <div id="report-content" class="bg-blue-50 p-6 rounded-lg shadow-inner text-gray-800 space-y-3">
-                        <p class="text-lg"><strong>Name</strong> <span id="report-name" class="font-medium text-blue-700"></span></p>
-                        <p class="text-lg"><strong>Email</strong> <span id="report-id" class="font-medium text-blue-700"></span></p>
-                        <hr class="my-4 border-blue-200" />
+                        <p class="text-lg"><strong>Name:</strong> <span id="report-name" class="font-medium text-blue-700"></span></p>
+                        <p class="text-lg"><strong>Email:</strong> <span id="report-id" class="font-medium text-blue-700"></span></p>
+                        <p class="text-lg"><strong>Degree:</strong> <span id="report-degree" class="font-medium text-blue-700"></span></p> <hr class="my-4 border-blue-200" />
                         <h3 class="text-xl font-bold text-blue-800 mb-3">Training Progress</h3>
                         <div id="training-report-details" class="space-y-2">
                             </div>
@@ -337,6 +426,7 @@
             firebase.initializeApp(firebaseConfig);
 
             const auth = firebase.auth();
+            const db = firebase.firestore(); // Initialize Firestore
 
             // Set persistence to 'none' to always require login on page reload
             auth.setPersistence(firebase.auth.Auth.Persistence.NONE)
@@ -348,24 +438,23 @@
                 });
 
             let userProgress = {}; // To store video completion and quiz scores
+            let currentUserData = {}; // To store additional user data like degree
 
-            // Updated trainingContentOrder to remove quizzes
             const trainingContentOrder = [
                 "intro",
                 "password",
                 "mfa",
                 "summary",
-                "completion" // The final completion accordion for the overall training
+                "completion"
             ];
 
             const allContentModules = {
                 intro: { type: "video", title: "Module 0: Cybersecurity Essentials", description: "An overview of key cybersecurity principles and why this training matters.", videoSrc: "intro.mp4", prevModule: null },
                 password: { type: "video", title: "Module 1: Strong Passwords", description: "Use long, complex, and unique passwords. Avoid reusing the same password. Consider using a password manager.", videoSrc: "password.mp4", prevModule: "intro" },
-                mfa: { type: "video", title: "Module 2: Multi-Factor Authentication", description: "MFA adds an extra layer of security. Even if your password is stolen, the second factor keeps you protected.", videoSrc: "your-mfa-video.mp4", prevModule: "password" }, // Changed prevModule to 'password'
-                summary: { type: "video", title: "Module 3: Summary", description: "A recap of all the key takeaways from this training package.", videoSrc: "summary.mp4", prevModule: "mfa" }, // Changed prevModule to 'mfa'
-                // Quizzes are now separate and not part of the sequential training modules directly
-                passwordQuiz: { type: "quiz", title: "Quiz 1: Password Quiz", description: "Test your knowledge on creating strong passwords.", prevModule: "password" }, // Prerequisite is the password video
-                mfaQuiz: { type: "quiz", title: "Quiz 2: MFA Quiz", description: "Test your knowledge on Multi-Factor Authentication.", prevModule: "mfa" }, // Prerequisite is the MFA video
+                mfa: { type: "video", title: "Module 2: Multi-Factor Authentication", description: "MFA adds an extra layer of security. Even if your password is stolen, the second factor keeps you protected.", videoSrc: "your-mfa-video.mp4", prevModule: "password" },
+                summary: { type: "video", title: "Module 3: Summary", description: "A recap of all the key takeaways from this training package.", videoSrc: "summary.mp4", prevModule: "mfa" },
+                passwordQuiz: { type: "quiz", title: "Quiz 1: Password Quiz", description: "Test your knowledge on creating strong passwords.", prevModule: "password" },
+                mfaQuiz: { type: "quiz", title: "Quiz 2: MFA Quiz", description: "Test your knowledge on Multi-Factor Authentication.", prevModule: "mfa" },
                 completion: { type: "completion", title: "Training Completed!", description: "You have successfully completed the Cybersecurity Awareness Training!", prevModule: "summary"}
             };
 
@@ -386,18 +475,38 @@
                 ],
             };
 
+            // Function to save user progress (video/quiz completion)
             function saveUserProgress() {
                 if (auth.currentUser) {
-                    localStorage.setItem(`userProgress_${auth.currentUser.uid}`, JSON.stringify(userProgress));
+                    const userId = auth.currentUser.uid;
+                    localStorage.setItem(`userProgress_${userId}`, JSON.stringify(userProgress));
+                    localStorage.setItem(`userData_${userId}`, JSON.stringify(currentUserData));
                 }
             }
 
-            function loadUserProgress() {
+            // Function to load user progress and user data from Firestore first, then localStorage as fallback
+            async function loadUserProgress() {
                 if (auth.currentUser) {
-                    const savedProgress = localStorage.getItem(`userProgress_${auth.currentUser.uid}`);
+                    const userId = auth.currentUser.uid;
+
+                    try {
+                        const doc = await db.collection('users').doc(userId).get();
+                        if (doc.exists) {
+                            currentUserData = doc.data() || {};
+                        } else {
+                            currentUserData = {};
+                        }
+                    } catch (error) {
+                        console.error("Error loading user data from Firestore:", error);
+                        const savedUserData = localStorage.getItem(`userData_${userId}`);
+                        currentUserData = savedUserData ? JSON.parse(savedUserData) : {};
+                    }
+
+                    const savedProgress = localStorage.getItem(`userProgress_${userId}`);
                     userProgress = savedProgress ? JSON.parse(savedProgress) : {};
                 } else {
-                    userProgress = {}; // Clear progress if no user
+                    userProgress = {};
+                    currentUserData = {};
                 }
             }
 
@@ -408,14 +517,11 @@
                 if (module.type === "video") {
                     return userProgress[moduleKey] && userProgress[moduleKey].watched === true;
                 } else if (module.type === "quiz") {
-                    // Quiz is completed if score exists and is >= 70
                     return userProgress[moduleKey] && userProgress[moduleKey].score !== undefined && userProgress[moduleKey].score >= 70;
                 } else if (module.type === "completion") {
-                    // For the main training completion, check if all training video modules are completed
                     const requiredTrainingModules = ["intro", "password", "mfa", "summary"];
                     return requiredTrainingModules.every(key => isModuleCompleted(key));
                 } else if (module.type === "quiz_completion") {
-                    // For quiz section completion, check if all quizzes are passed
                     const requiredQuizzes = ["passwordQuiz", "mfaQuiz"];
                     return requiredQuizzes.every(key => isModuleCompleted(key));
                 }
@@ -425,10 +531,8 @@
             function isModuleLocked(moduleKey) {
                 const module = allContentModules[moduleKey];
                 if (!module || !module.prevModule) {
-                    return false; // First module or no prerequisites
+                    return false;
                 }
-
-                // Check if the previous module (video or quiz) is completed
                 return !isModuleCompleted(module.prevModule);
             }
 
@@ -460,7 +564,6 @@
                 if (content.classList.contains('open')) {
                     closeAccordion(headerElement);
                 } else {
-                    // Close all other open accordions
                     document.querySelectorAll('.accordion-content.open').forEach(openContent => {
                         closeAccordion(openContent.previousElementSibling);
                     });
@@ -470,15 +573,14 @@
 
             function renderTrainingModules() {
                 const container = document.getElementById("training-modules-container");
-                container.innerHTML = ""; // Clear existing content
-                const userName = auth.currentUser ? auth.currentUser.displayName : "User"; // Get current user's display name
+                container.innerHTML = "";
+                const userName = auth.currentUser ? auth.currentUser.displayName : "User";
 
                 trainingContentOrder.forEach(key => {
                     const module = allContentModules[key];
                     const isCompleted = isModuleCompleted(key);
                     const isLocked = isModuleLocked(key);
 
-                    // Skip quiz modules in the training view
                     if (module.type === "quiz") return;
 
                     const accordionBlock = document.createElement("div");
@@ -489,7 +591,7 @@
                     header.setAttribute('role', 'button');
                     header.setAttribute('aria-expanded', 'false');
                     header.setAttribute('aria-controls', `${key}-content`);
-                    header.dataset.moduleKey = key; // Store the module key for event listener
+                    header.dataset.moduleKey = key;
 
                     const titleContainer = document.createElement("div");
                     titleContainer.className = "flex items-center gap-3";
@@ -512,7 +614,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
                     `;
-                    header.innerHTML += arrowSvg; // Append arrow to header
+                    header.innerHTML += arrowSvg;
 
                     const content = document.createElement("div");
                     content.id = `${key}-content`;
@@ -547,14 +649,14 @@
                     if (isLocked) {
                         header.classList.add("cursor-not-allowed");
                         header.classList.remove("hover:bg-gray-100");
-                        header.style.pointerEvents = "none"; // Disable clicks on locked headers
+                        header.style.pointerEvents = "none";
                         const lockIcon = `<svg class="w-5 h-5 ml-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>`;
                         titleContainer.innerHTML += lockIcon;
-                        accordionBlock.classList.add("filter", "grayscale"); // Visual lock
+                        accordionBlock.classList.add("filter", "grayscale");
                     } else {
                             header.addEventListener("click", () => {
                                 toggleAccordion(header);
-                                stopAllVideos(); // Stop all videos when an accordion is toggled
+                                stopAllVideos();
                                 if (module.type === "video") {
                                     const video = content.querySelector('video');
                                     if (video && content.classList.contains('open')) {
@@ -569,7 +671,6 @@
                     container.appendChild(accordionBlock);
                 });
 
-                // Add event listeners for "Mark as Watched" buttons
                 document.querySelectorAll(".mark-watched-btn").forEach((button) => {
                     button.addEventListener("click", (e) => {
                         const moduleKey = e.target.dataset.module;
@@ -578,8 +679,8 @@
                         }
                         userProgress[moduleKey].watched = true;
                         saveUserProgress();
-                        renderTrainingModules(); // Re-render to update checkmarks and unlock next modules
-                        renderQuizModules(); // Re-render quizzes tab to update lock status
+                        renderTrainingModules();
+                        renderQuizModules();
                         updateReportContent();
                     });
                 });
@@ -587,25 +688,21 @@
 
             function renderQuizModules() {
                 const container = document.getElementById("quiz-modules-container");
-                container.innerHTML = ""; // Clear existing content
-                quizForm.classList.add("hidden"); // Hide quiz form when rendering modules
-                quizResult.classList.add("hidden"); // Hide quiz result
-                const userName = auth.currentUser ? auth.currentUser.displayName : "User"; // Get current user's display name
+                container.innerHTML = "";
+                quizForm.classList.add("hidden");
+                quizResult.classList.add("hidden");
+                const userName = auth.currentUser ? auth.currentUser.displayName : "User";
 
-
-                // Define the order of quizzes and a final completion accordion for the quiz section
                 const quizOrder = ["passwordQuiz", "mfaQuiz", "quiz_completion"];
 
-                // Add a new module type for quiz completion if it doesn't exist
                 if (!allContentModules.quiz_completion) {
                     allContentModules.quiz_completion = {
                         type: "quiz_completion",
                         title: "Quiz Completion!",
                         description: "Congratulations! You've passed all the quizzes!",
-                        prevModule: "mfaQuiz" // Requires MFA quiz to be completed
+                        prevModule: "mfaQuiz"
                     };
                 }
-
 
                 quizOrder.forEach(quizKey => {
                     const module = allContentModules[quizKey];
@@ -663,7 +760,7 @@
                     } else {
                             header.addEventListener("click", () => {
                                 toggleAccordion(header);
-                                quizForm.classList.add("hidden"); // Hide quiz form when closing accordions
+                                quizForm.classList.add("hidden");
                                 quizResult.classList.add("hidden");
                             });
                     }
@@ -685,7 +782,6 @@
                         }
                         startQuizButton.addEventListener("click", () => {
                             loadQuiz(quizKey);
-                            // Close all quiz accordions and open the quiz form
                             document.querySelectorAll('.accordion-content.open').forEach(openContent => {
                                 closeAccordion(openContent.previousElementSibling);
                             });
@@ -721,7 +817,7 @@
             const quizQuestionsDiv = document.getElementById("quiz-questions");
             const quizForm = document.getElementById("quiz-form");
             const quizResult = document.getElementById("quiz-result");
-            let currentQuizTopic = null; // To keep track of which quiz is being taken
+            let currentQuizTopic = null;
 
             function loadQuiz(topic) {
                 currentQuizTopic = topic;
@@ -735,38 +831,35 @@
                     const qBlock = document.createElement("div");
                     qBlock.className = "mb-6 p-4 border border-blue-200 rounded-lg bg-blue-50";
 
-                    const questionText = document.createElement("div"); // Changed to div for question text
+                    const questionText = document.createElement("div");
                     questionText.className = "block font-bold mb-3 text-gray-800 text-lg";
                     questionText.innerText = `${index + 1}. ${q.question}`;
                     qBlock.appendChild(questionText);
 
                     const optionsContainer = document.createElement("div");
-                    optionsContainer.className = "space-y-2"; // Add spacing between options
+                    optionsContainer.className = "space-y-2";
 
                     q.options.forEach((optionText, optionIndex) => {
-                        const optionLabel = document.createElement("label"); // The label will act as the clickable option block
+                        const optionLabel = document.createElement("label");
                         optionLabel.className = "mcq-option";
-                        optionLabel.htmlFor = `q${index}-option${optionIndex}`; // Link label to radio button
+                        optionLabel.htmlFor = `q${index}-option${optionIndex}`;
 
                         const radioInput = document.createElement("input");
                         radioInput.type = "radio";
-                        radioInput.name = `q${index}`; // Group radio buttons by question
+                        radioInput.name = `q${index}`;
                         radioInput.value = optionText;
-                        radioInput.id = `q${index}-option${optionIndex}`; // Unique ID for each radio
+                        radioInput.id = `q${index}-option${optionIndex}`;
                         
-                        // Add event listener to highlight selected option
                         radioInput.addEventListener('change', function() {
-                            // Remove 'selected' class from all other options for this question
                             document.querySelectorAll(`label[for^="q${index}-option"]`).forEach(el => {
                                 el.classList.remove('selected');
                             });
-                            // Add 'selected' class to the current label if its radio is checked
                             if (this.checked) {
                                 optionLabel.classList.add('selected');
                             }
                         });
 
-                        const optionSpan = document.createElement("span"); // Use span for the text inside the label
+                        const optionSpan = document.createElement("span");
                         optionSpan.className = "mcq-option-label";
                         optionSpan.innerText = optionText;
 
@@ -790,7 +883,6 @@
 
                 let allAnswered = true;
                 for (let i = 0; i < questions.length; i++) {
-                    // Get the selected radio button for the current question
                     const selectedOption = quizForm.querySelector(`input[name="q${i}"]:checked`);
                     
                     if (!selectedOption) {
@@ -814,16 +906,15 @@
                 saveUserProgress();
 
                 quizResult.classList.remove("hidden");
-                quizResult.className = "mt-6 p-4 rounded-lg text-center text-lg font-semibold flex flex-col items-center"; // Added flex styles for button alignment
+                quizResult.className = "mt-6 p-4 rounded-lg text-center text-lg font-semibold flex flex-col items-center";
 
-                // Clear previous buttons if any
                 quizResult.querySelectorAll(".quiz-action-btn").forEach(btn => btn.remove());
-                quizResult.querySelector("br")?.remove(); // Remove existing break tag if any
+                quizResult.querySelector("br")?.remove();
 
                 if (percentage >= 70) {
                     quizResult.innerText = `✅ Great job! You scored ${percentage.toFixed(0)}%.`;
                     quizResult.classList.add("bg-green-100", "text-green-800");
-                    quizResult.classList.remove("bg-red-100", "text-red-800"); // Ensure red is removed if retrying and passing
+                    quizResult.classList.remove("bg-red-100", "text-red-800");
 
                     const backToQuizzesBtn = document.createElement("button");
                     backToQuizzesBtn.id = "quiz-continue-btn";
@@ -841,16 +932,16 @@
                 } else {
                     quizResult.innerText = `❌ You scored ${percentage.toFixed(0)}%. Please review the training and try again.`;
                     quizResult.classList.add("bg-red-100", "text-red-800");
-                    quizResult.classList.remove("bg-green-100", "text-green-800"); // Ensure green is removed
+                    quizResult.classList.remove("bg-green-100", "text-green-800");
 
                     const buttonContainer = document.createElement("div");
-                    buttonContainer.className = "flex justify-center gap-4 mt-4"; // Flex container for buttons
+                    buttonContainer.className = "flex justify-center gap-4 mt-4";
 
                     const retryBtn = document.createElement("button");
                     retryBtn.className = "quiz-action-btn bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md font-semibold text-lg transition duration-300 ease-in-out transform hover:-translate-y-1";
                     retryBtn.textContent = "Retry Quiz";
                     retryBtn.addEventListener("click", () => {
-                        loadQuiz(selectedTopic); // Reload the same quiz
+                        loadQuiz(selectedTopic);
                     });
 
                     const backToTrainingBtn = document.createElement("button");
@@ -858,35 +949,9 @@
                     backToTrainingBtn.textContent = "Go back to Training";
                     backToTrainingBtn.addEventListener("click", () => {
                         quizForm.classList.add("hidden");
-                        document.querySelector('.tab[data-target="training"]').click(); // Activate training tab
-                        renderTrainingModules(); // Re-render training to update status and unlock next if needed
-
-                        // Open the specific video accordion based on the failed quiz
-                        let targetVideoModuleKey;
-                        if (selectedTopic === "passwordQuiz") {
-                            targetVideoModuleKey = "password";
-                        } else if (selectedTopic === "mfaQuiz") {
-                            targetVideoModuleKey = "mfa";
-                        }
-
-                        if (targetVideoModuleKey) {
-                            const headerElement = document.querySelector(`#training-modules-container [data-module-key="${targetVideoModuleKey}"] .accordion-header`);
-                            if (headerElement) {
-                                // Close all other accordions first
-                                document.querySelectorAll('.accordion-content.open').forEach(openContent => {
-                                    closeAccordion(openContent.previousElementSibling);
-                                });
-                                openAccordion(headerElement);
-                                // Scroll to the video module
-                                setTimeout(() => { // Small delay to allow accordion to open before scrolling
-                                    headerElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                    const videoElement = headerElement.nextElementSibling.querySelector('video');
-                                    if (videoElement) {
-                                        videoElement.play();
-                                    }
-                                }, 350); // Match accordion transition time
-                            }
-                        }
+                        document.querySelector('.tab[data-target="training"]').click();
+                        renderTrainingModules();
+                        renderQuizModules();
                         updateReportContent();
                     });
 
@@ -898,46 +963,88 @@
 
 
             // Feedback form submission
-            document.getElementById("feedback-form").addEventListener("submit", (e) => {
+            document.getElementById("feedback-form").addEventListener("submit", async (e) => {
                 e.preventDefault();
+                const feedbackMsg = document.getElementById("feedback-msg");
+                feedbackMsg.classList.add("hidden"); // Hide previous messages
+
                 const module = document.getElementById("feedback-module").value;
                 const rating = document.getElementById("feedback-rating").value;
+                const studentId = document.getElementById("student-id").value.trim();
+                const recommendLikelihood = document.querySelector('input[name="recommend-likelihood"]:checked')?.value;
+                const navigationDifficulty = document.querySelector('input[name="navigation-difficulty"]:checked')?.value;
+                const comprehensivenessRating = document.querySelector('input[name="comprehensiveness-rating"]:checked')?.value;
+                const engagingRating = document.querySelector('input[name="engaging-rating"]:checked')?.value;
                 const comments = document.getElementById("feedback-comments").value.trim();
-                const feedbackMsg = document.getElementById("feedback-msg");
 
-                if (!module || !rating) {
-                    feedbackMsg.innerText = "Please select a module and a rating.";
+                if (!auth.currentUser) {
+                    feedbackMsg.innerText = "Please log in to submit feedback.";
                     feedbackMsg.classList.remove("hidden");
                     feedbackMsg.classList.remove("bg-green-100", "text-green-800");
                     feedbackMsg.classList.add("bg-red-100", "text-red-800");
                     return;
                 }
 
-                // In a real application, you would send this data to a database (e.g., Firebase Firestore)
-                console.log("Feedback Submitted:", { module, rating, comments });
+                // Client-side validation for required fields
+                if (!studentId || !recommendLikelihood || !navigationDifficulty || !comprehensivenessRating || !engagingRating) {
+                    feedbackMsg.innerText = "Please fill in all required survey fields (marked with *).";
+                    feedbackMsg.classList.remove("hidden");
+                    feedbackMsg.classList.remove("bg-green-100", "text-green-800");
+                    feedbackMsg.classList.add("bg-red-100", "text-red-800");
+                    return;
+                }
 
-                feedbackMsg.innerText = "Thank you for your feedback! Your input helps us improve.";
-                feedbackMsg.classList.remove("hidden");
-                feedbackMsg.classList.remove("bg-red-100", "text-red-800");
-                feedbackMsg.classList.add("bg-green-100", "text-green-800");
+                const surveyData = {
+                    userId: auth.currentUser.uid,
+                    userName: auth.currentUser.displayName || 'Anonymous',
+                    userEmail: auth.currentUser.email,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(), // Get server timestamp
+                    moduleId: module,
+                    moduleRating: rating,
+                    studentId: studentId,
+                    recommendLikelihood: recommendLikelihood,
+                    navigationDifficulty: navigationDifficulty,
+                    comprehensivenessRating: comprehensivenessRating,
+                    engagingRating: engagingRating,
+                    comments: comments,
+                    userDegree: currentUserData.degree || 'Not specified' // Include user's degree in survey data
+                };
 
-                document.getElementById("feedback-form").reset(); // Clear form after submission
+                try {
+                    await db.collection("surveys").add(surveyData);
+
+                    // SUCCESS MESSAGE FOR FEEDBACK
+                    feedbackMsg.innerText = "Feedback successfully submitted! Thank you for your input.";
+                    feedbackMsg.classList.remove("hidden", "bg-red-100", "text-red-800");
+                    feedbackMsg.classList.add("bg-green-100", "text-green-800");
+                    
+                    document.getElementById("feedback-form").reset(); // Clear form after submission
+                    document.getElementById("feedback-module").value = ""; // Explicitly reset select
+                    document.getElementById("feedback-rating").value = ""; // Explicitly reset select
+
+                } catch (error) {
+                    console.error("Error submitting feedback to Firestore:", error);
+                    feedbackMsg.innerText = `Error submitting feedback: ${error.message}`;
+                    feedbackMsg.classList.remove("hidden", "bg-green-100", "text-green-800");
+                    feedbackMsg.classList.add("bg-red-100", "text-red-800");
+                }
             });
 
             function updateReportContent() {
                 const reportName = document.getElementById("report-name");
                 const reportEmail = document.getElementById("report-id");
+                const reportDegree = document.getElementById("report-degree");
                 const trainingReportDetails = document.getElementById("training-report-details");
                 const quizReportDetails = document.getElementById("quiz-report-details");
 
                 reportName.innerText = auth.currentUser.displayName || "N/A";
                 reportEmail.innerText = auth.currentUser.email || "N/A";
+                reportDegree.innerText = currentUserData.degree || "Not specified";
 
                 let trainingReportHtml = "";
-                // Filter to only include video modules for the training progress section
                 trainingContentOrder.forEach(key => {
                     const module = allContentModules[key];
-                    if (module.type === "video") { // Only process video modules here
+                    if (module.type === "video") {
                         const isCompleted = isModuleCompleted(key);
                         let statusText = isCompleted ? '✅ Completed' : '⏳ Pending';
                         let statusClass = isCompleted ? 'text-green-600' : 'text-gray-500';
@@ -956,9 +1063,9 @@
 
 
                 let quizReportHtml = "";
-                const quizKeysForReport = ["passwordQuiz", "mfaQuiz"]; // Explicitly list quizzes for report
+                const quizKeysForReport = ["passwordQuiz", "mfaQuiz"];
                 quizKeysForReport.forEach(quizKey => {
-                    const quizTitle = allContentModules[quizKey].title; // Get title from allContentModules
+                    const quizTitle = allContentModules[quizKey].title;
                     const quizScore = userProgress[quizKey] ? userProgress[quizKey].score : null;
 
                     if (quizScore !== null) {
@@ -972,25 +1079,26 @@
 
 
             // Login
-            document.getElementById("login-btn").addEventListener("click", () => {
+            document.getElementById("login-btn").addEventListener("click", async () => {
                 const email = document.getElementById("email").value.trim();
                 const password = document.getElementById("password").value;
 
-                auth.signInWithEmailAndPassword(email, password)
-                    .then((userCredential) => {
-                        const user = userCredential.user;
-                        document.getElementById("user-name").innerText = user.displayName || "User";
-                        document.getElementById("user-email").innerText = user.email;
-                        document.getElementById("auth-section").classList.add("hidden");
-                        document.getElementById("main-app").classList.remove("hidden");
-                        loadUserProgress(); // Load progress for the logged-in user
-                        renderTrainingModules(); // Render modules based on loaded progress
-                        renderQuizModules(); // Render quizzes based on loaded progress
-                        document.querySelector('.tab[data-target="training"]').click(); // Set the active tab to "Training" by default on login
-                    })
-                    .catch((error) => {
-                        document.getElementById("auth-error").innerText = error.message;
-                    });
+                try {
+                    const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                    const user = userCredential.user;
+                    document.getElementById("user-name").innerText = user.displayName || "User";
+                    document.getElementById("user-email").innerText = user.email;
+                    document.getElementById("auth-section").classList.add("hidden");
+                    document.getElementById("main-app").classList.remove("hidden");
+                    await loadUserProgress();
+                    document.getElementById("user-degree").innerText = currentUserData.degree || "Not specified";
+                    renderTrainingModules();
+                    renderQuizModules();
+                    document.querySelector('.tab[data-target="training"]').click();
+                } catch (error) {
+                    document.getElementById("auth-error").innerText = error.message;
+                    console.error("Login Error:", error);
+                }
             });
 
             // Logout functionality
@@ -1001,11 +1109,14 @@
                         .then(() => {
                             document.getElementById("user-name").innerText = "";
                             document.getElementById("user-email").innerText = "";
+                            document.getElementById("user-degree").innerText = "";
                             document.getElementById("main-app").classList.add("hidden");
                             document.getElementById("auth-section").classList.remove("hidden");
-                            userProgress = {}; // Clear local progress on logout
-                            localStorage.removeItem(`userProgress_${auth.currentUser?.uid}`); // Clear specific user's progress
-                            stopAllVideos(); // Stop any playing videos
+                            userProgress = {};
+                            currentUserData = {};
+                            localStorage.removeItem(`userProgress_${auth.currentUser?.uid}`);
+                            localStorage.removeItem(`userData_${auth.currentUser?.uid}`);
+                            stopAllVideos();
                         })
                         .catch((error) => {
                             console.error("Logout Error:", error.message);
@@ -1027,10 +1138,11 @@
             });
 
             // Sign Up
-            document.getElementById("signup-btn").addEventListener("click", () => {
+            document.getElementById("signup-btn").addEventListener("click", async () => {
                 const email = document.getElementById("signup-email").value.trim();
                 const password = document.getElementById("signup-password").value;
                 const name = document.getElementById("signup-name").value.trim();
+                const degree = document.getElementById("signup-degree").value;
 
                 if (!email.endsWith("@student.murdoch.edu.au")) {
                     document.getElementById("signup-error").innerText = "Only Murdoch student emails are allowed.";
@@ -1042,24 +1154,43 @@
                     return;
                 }
 
-                auth.createUserWithEmailAndPassword(email, password)
-                    .then((userCredential) => {
-                        return userCredential.user.updateProfile({ displayName: name });
-                    })
-                    .then(() => {
-                        const user = auth.currentUser;
-                        document.getElementById("user-name").innerText = user.displayName || "User";
-                        document.getElementById("user-email").innerText = user.email;
-                        document.getElementById("signup-form").classList.add("hidden");
-                        document.getElementById("main-app").classList.remove("hidden");
-                        loadUserProgress(); // Load progress (will be empty for new user)
-                        renderTrainingModules(); // Render modules for new user
-                        renderQuizModules(); // Render quizzes for new user
-                        document.querySelector('.tab[data-target="training"]').click(); // Set the active tab to "Training" by default on signup
-                    })
-                    .catch((error) => {
-                        document.getElementById("signup-error").innerText = error.message;
-                    });
+                if (!degree) {
+                    document.getElementById("signup-error").innerText = "Please select your degree.";
+                    return;
+                }
+
+                try {
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                    const user = userCredential.user;
+
+                    await user.updateProfile({ displayName: name });
+
+                    await db.collection('users').doc(user.uid).set({
+                        email: user.email,
+                        displayName: name,
+                        degree: degree
+                    }, { merge: true });
+
+                    currentUserData = {
+                        email: user.email,
+                        displayName: user.displayName,
+                        degree: degree
+                    };
+                    saveUserProgress();
+
+                    document.getElementById("user-name").innerText = user.displayName || "User";
+                    document.getElementById("user-email").innerText = user.email;
+                    document.getElementById("user-degree").innerText = currentUserData.degree;
+                    document.getElementById("signup-form").classList.add("hidden");
+                    document.getElementById("main-app").classList.remove("hidden");
+                    await loadUserProgress();
+                    renderTrainingModules();
+                    renderQuizModules();
+                    document.querySelector('.tab[data-target="training"]').click();
+                } catch (error) {
+                    document.getElementById("signup-error").innerText = error.message;
+                    console.error("Signup Error:", error);
+                }
             });
 
             // Tab switching logic
@@ -1071,14 +1202,12 @@
                     document.querySelectorAll("section").forEach((sec) => sec.classList.add("hidden"));
                     document.getElementById(target).classList.remove("hidden");
 
-                    // Update active tab styling
                     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active-tab"));
                     btn.classList.add("active-tab");
 
                     if (target === "quiz") {
-                        renderQuizModules(); // Ensure quiz modules are up-to-date with lock status
+                        renderQuizModules();
                     } else {
-                        // Hide quiz form if not on quiz tab
                         quizForm.classList.add("hidden");
                         quizResult.classList.add("hidden");
                     }
@@ -1088,24 +1217,27 @@
                     }
 
                     if (target === "feedback") {
-                        document.getElementById("feedback-msg").classList.add("hidden"); // Hide feedback message on tab switch
-                        document.getElementById("feedback-form").reset(); // Clear form
+                        document.getElementById("feedback-msg").classList.add("hidden");
+                        document.getElementById("feedback-form").reset();
+                        document.getElementById("feedback-module").value = "";
+                        document.getElementById("feedback-rating").value = "";
                     }
                 });
             });
 
 
-            // Initial setup for the training section if user is already logged in (e.g., on page refresh)
-            auth.onAuthStateChanged((user) => {
+            // Initial setup on page load
+            auth.onAuthStateChanged(async (user) => {
                 if (user) {
                     document.getElementById("user-name").innerText = user.displayName || "User";
                     document.getElementById("user-email").innerText = user.email;
                     document.getElementById("auth-section").classList.add("hidden");
                     document.getElementById("main-app").classList.remove("hidden");
-                    loadUserProgress(); // Load progress for the logged-in user
-                    renderTrainingModules(); // Render modules based on loaded progress
-                    renderQuizModules(); // Render quizzes based on loaded progress
-                    document.querySelector('.tab[data-target="training"]').click(); // Ensure training tab is active on load if logged in
+                    await loadUserProgress();
+                    document.getElementById("user-degree").innerText = currentUserData.degree || "Not specified";
+                    renderTrainingModules();
+                    renderQuizModules();
+                    document.querySelector('.tab[data-target="training"]').click();
                 } else {
                     document.getElementById("auth-section").classList.remove("hidden");
                     document.getElementById("main-app").classList.add("hidden");
